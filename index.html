@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Sociologi 1">
+<title>Sociologi 1 – Lärstig mot A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7faf8;--surface:#fff;--text:#16241d;--muted:#6b7c72;--line:#e2ebe5;
+--green:#2e9e6b;--green-dark:#237a52;--green-light:#eaf6ef;--green-mid:#d4ecdf;
+--shadow:0 2px 8px rgba(46,158,107,.06);--shadow-lg:0 8px 28px rgba(46,158,107,.12);
+--radius:16px;--nav-h:56px;--purple:#7a6cd4;--purple-light:#efecfa}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;padding-top:var(--nav-h)}
+button{font-family:inherit}
+.app{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+.view{display:none}.view.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.top-nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,.95);
+backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+display:flex;justify-content:center;align-items:center;gap:2px;z-index:50;padding:0 8px;overflow-x:auto}
+.top-nav::-webkit-scrollbar{display:none}
+.nav-btn{background:none;border:none;padding:8px 12px;border-radius:10px;font-size:13px;font-weight:600;
+color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+.nav-btn:hover{background:var(--green-light);color:var(--green-dark)}
+.nav-btn.active{background:var(--green);color:#fff}
+
+.path-header{text-align:center;padding:20px 8px 4px}
+.path-header h1{font-size:clamp(24px,5vw,32px);margin:0 0 4px;font-weight:700;letter-spacing:-.02em}
+.path-header .subtitle{color:var(--muted);margin:0 0 16px;font-size:14px}
+.path-progress{max-width:360px;margin:0 auto 16px}
+.progress-bar{height:8px;background:var(--green-mid);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#3fbb84,var(--green));border-radius:999px;transition:width 1s ease}
+.progress-text{display:block;margin-top:6px;font-size:12.5px;color:var(--muted);font-weight:500}
+
+.chapter-grid{display:flex;flex-direction:column;gap:12px}
+.chapter-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+padding:16px 18px;cursor:pointer;transition:all .2s;text-align:left;width:100%;
+display:flex;align-items:center;gap:14px}
+.chapter-card:hover{border-color:#b8ddc8;box-shadow:var(--shadow-lg);transform:translateY(-1px)}
+.chapter-card.done{border-color:#c5e6d5;background:#fbfefc}
+.chapter-num{width:44px;height:44px;border-radius:12px;background:var(--green-light);
+display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;
+color:var(--green-dark);flex-shrink:0}
+.chapter-card.done .chapter-num{background:var(--green);color:#fff}
+.chapter-info{flex:1;min-width:0}
+.chapter-name{font-weight:700;font-size:15px;margin:0 0 2px;display:block}
+.chapter-meta{font-size:12.5px;color:var(--muted);display:block}
+.chapter-chev{color:#b0bfb7;font-size:20px;flex-shrink:0}
+.chapter-bar{height:4px;background:var(--green-mid);border-radius:999px;margin-top:8px;overflow:hidden}
+.chapter-bar-fill{height:100%;width:0;background:var(--green);transition:width .4s}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;
+border-radius:12px;border:none;font-size:14.5px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--green-dark);transform:translateY(-1px);box-shadow:0 6px 16px rgba(46,158,107,.25)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{background:transparent;color:var(--green-dark);border:1.5px solid var(--line)}
+.btn-ghost:hover{border-color:var(--green);background:var(--green-light)}
+.btn-copy{background:var(--purple);color:#fff;border:none;padding:10px 16px;border-radius:10px;
+font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-copy:hover{background:#6558b8}
+.btn-copy.copied{background:var(--green)}
+
+.view-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.back-btn{background:var(--surface);border:1px solid var(--line);width:42px;height:42px;border-radius:12px;
+display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--text);
+transition:all .2s;flex-shrink:0}
+.back-btn:hover{border-color:var(--green);background:var(--green-light)}
+.view-title{font-size:clamp(20px,4vw,25px);margin:0;font-weight:700;letter-spacing:-.01em}
+.view-sub{color:var(--muted);font-size:13.5px;margin:2px 0 0}
+
+.step-list{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.step-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;text-align:left;width:100%;font-size:14.5px}
+.step-card:hover{border-color:#b8ddc8;box-shadow:var(--shadow-lg);transform:translateY(-1px)}
+.step-card.done{border-color:#c5e6d5;background:#fbfefc}
+.step-icon{width:38px;height:38px;border-radius:10px;background:var(--green-light);
+display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;color:var(--green-dark);font-weight:700}
+.step-card.done .step-icon{background:var(--green);color:#fff}
+.step-icon.type-A{background:var(--green-dark);color:#fff}
+.step-icon.type-C{background:var(--green-mid);color:#1e6b47}
+.step-icon.type-skriv,.step-icon.type-fall,.step-icon.type-kritik{background:var(--purple-light);color:var(--purple)}
+.step-body{flex:1;min-width:0}
+.step-title{font-weight:600;margin:0 0 2px;font-size:14.5px;display:block}
+.step-meta{font-size:12.5px;color:var(--muted);display:block}
+.step-chev{color:#b0bfb7;font-size:18px;flex-shrink:0}
+
+.level-badge{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.04em;display:inline-block}
+.level-E{background:var(--green-light);color:var(--green-dark)}
+.level-C{background:var(--green-mid);color:#1e6b47}
+.level-A{background:var(--green-dark);color:#fff}
+
+.lesson-content{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+padding:clamp(18px,4vw,26px);margin-bottom:18px}
+.lesson-content h4{font-size:15.5px;margin:20px 0 10px;color:var(--green-dark);font-weight:700}
+.lesson-content h4:first-child{margin-top:0}
+.lesson-content p{margin:0 0 13px;font-size:14.5px}
+.lesson-content ul,.lesson-content ol{margin:0 0 13px;padding-left:22px}
+.lesson-content li{margin-bottom:6px;font-size:14.5px}
+.lesson-content strong{font-weight:600}
+.lesson-content em{font-style:italic;color:var(--muted)}
+.lesson-content .callout{background:var(--green-light);border-left:3px solid var(--green);padding:12px 14px;border-radius:8px;margin:14px 0;font-size:14px}
+.lesson-content .callout-warn{background:#fff8e6;border-left:3px solid #d4a72c;padding:12px 14px;border-radius:8px;margin:14px 0;font-size:14px}
+.lesson-content table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+.lesson-content th,.lesson-content td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.lesson-content th{font-weight:700;color:var(--green-dark);background:var(--green-light)}
+.lesson-content .footnote{font-size:12px;color:var(--muted);font-style:italic;margin-top:6px}
+.lesson-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+.exercise-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+padding:clamp(18px,4vw,26px);margin-bottom:18px}
+.exercise-context{font-size:14px;line-height:1.6;margin:0 0 14px;padding:12px 14px;background:var(--bg);
+border-radius:10px;border-left:3px solid var(--green-mid)}
+.exercise-q{font-size:15px;font-weight:600;margin:0 0 14px;line-height:1.55}
+.exercise-q strong{color:var(--green-dark)}
+.exercise-textarea{width:100%;min-height:140px;border:1.5px solid var(--line);border-radius:12px;
+padding:14px;font-family:inherit;font-size:14.5px;resize:vertical;background:var(--bg);color:var(--text);line-height:1.5}
+.exercise-textarea:focus{outline:none;border-color:var(--green);background:#fff}
+.exercise-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.model-box{margin-top:16px;padding:16px;background:var(--green-light);border-radius:12px;border:1px solid #c5e6d5;display:none}
+.model-box.show{display:block;animation:fadeIn .3s ease}
+.model-box h5{margin:0 0 8px;font-size:13px;font-weight:700;color:var(--green-dark);text-transform:uppercase;letter-spacing:.05em}
+.model-box p{margin:0;font-size:14px;line-height:1.6}
+.krav-box{margin-top:14px;padding:14px;background:var(--purple-light);border-radius:12px;
+border:1px solid #d8d2f0}
+.krav-box h5{margin:0 0 8px;font-size:12.5px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.05em}
+.krav-box p{margin:0;font-size:13px;line-height:1.55;color:#4a3f7a}
+
+.quiz-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(18px,4vw,26px)}
+.q-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.q-counter{font-size:12.5px;color:var(--muted);font-weight:500}
+.q-text{font-size:16px;font-weight:600;margin:0 0 16px;line-height:1.5}
+.options{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.option{background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:12px 14px;
+text-align:left;font-size:14.5px;cursor:pointer;transition:all .15s;color:var(--text);font-weight:500}
+.option:hover{border-color:#b8ddc8;background:#fff}
+.option.selected{border-color:var(--green);background:var(--green-light)}
+.option.correct{border-color:var(--green);background:#e3f7ec}
+.option.wrong{border-color:#e05a5a;background:#fdeaea}
+.option:disabled{cursor:default}
+.feedback{margin-top:16px;padding:14px;border-radius:11px;background:var(--green-light);border:1px solid #c5e6d5}
+.feedback h5{margin:0 0 6px;font-size:13px;font-weight:700;color:var(--green-dark)}
+.feedback p{margin:0 0 8px;font-size:13.5px;line-height:1.55}
+.result{text-align:center;padding:18px 0}
+.result h3{font-size:20px;margin:0 0 8px}
+.result-score{font-size:42px;font-weight:700;color:var(--green);margin:6px 0}
+.result p{color:var(--muted);margin:0 0 18px;font-size:14px}
+
+.begrepp-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:10px}
+.begrepp-term{font-size:15.5px;font-weight:700;margin:0 0 4px;color:var(--green-dark)}
+.begrepp-cat{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+.begrepp-def{font-size:14px;margin:0 0 8px;line-height:1.55}
+.begrepp-ex{font-size:13px;color:var(--muted);font-style:italic;margin:0;line-height:1.5}
+
+.search-bar{position:relative;margin-bottom:14px}
+.search-bar input{width:100%;padding:12px 16px 12px 42px;border:1.5px solid var(--line);border-radius:12px;
+font-size:14.5px;background:var(--surface);color:var(--text);font-family:inherit}
+.search-bar input:focus{outline:none;border-color:var(--green)}
+.search-bar::before{content:'⌕';position:absolute;left:15px;top:50%;transform:translateY(-50%);
+font-size:19px;color:var(--muted);pointer-events:none}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.filter-btn{padding:6px 12px;border-radius:20px;border:1.5px solid var(--line);background:var(--surface);
+font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s}
+.filter-btn:hover{border-color:var(--green);color:var(--green-dark)}
+.filter-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+
+.fc-counter{text-align:center;font-size:12.5px;color:var(--muted);margin-bottom:12px;font-weight:500}
+.flashcard{background:var(--surface);border:2px solid var(--green-mid);border-radius:18px;min-height:240px;
+display:flex;align-items:center;justify-content:center;padding:28px 22px;cursor:pointer;
+transition:all .3s;text-align:center;user-select:none;box-shadow:var(--shadow)}
+.flashcard:hover{border-color:var(--green);box-shadow:var(--shadow-lg)}
+.flashcard.flipped{background:var(--green-light);border-color:var(--green)}
+.fc-inner{font-size:16px;font-weight:600;line-height:1.5;max-width:100%}
+.flashcard.flipped .fc-inner{font-weight:500;font-size:14.5px}
+.fc-hint{text-align:center;font-size:11.5px;color:var(--muted);margin-top:10px}
+.fc-controls{display:flex;gap:8px;margin-top:14px;justify-content:center;flex-wrap:wrap}
+.fc-controls button{flex:1;min-width:90px}
+.fc-progress{margin-top:14px;text-align:center;font-size:12.5px;color:var(--muted)}
+
+.kritik-section{margin-bottom:24px}
+.kritik-section h3{font-size:17px;margin:0 0 12px;color:var(--green-dark);padding-bottom:8px;border-bottom:2px solid var(--green-mid)}
+.kritik-item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:10px}
+.kritik-item h4{font-size:14.5px;margin:0 0 8px;font-weight:700}
+.kritik-item p{margin:0 0 8px;font-size:14px;line-height:1.55}
+.kritik-item .source{font-size:12px;color:var(--muted);font-style:italic;margin-top:8px}
+.kritik-item .response{font-size:13.5px;background:var(--green-light);padding:10px 12px;border-radius:8px;margin-top:10px}
+.kritik-item .response strong{color:var(--green-dark)}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green-dark);
+color:#fff;padding:11px 18px;border-radius:11px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow-lg);
+opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:100;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.copy-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.copy-modal.show{display:flex;animation:fadeIn .2s ease}
+.copy-modal-inner{background:var(--surface);border-radius:var(--radius);max-width:640px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);overflow:hidden}
+.copy-modal-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.copy-modal-head h3{margin:0;font-size:16px;font-weight:700}
+.copy-modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);padding:0;line-height:1;transition:color .15s}
+.copy-modal-close:hover{color:var(--text)}
+.copy-modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+.copy-modal-body textarea{width:100%;min-height:320px;border:1.5px solid var(--line);border-radius:10px;padding:12px;font-family:'SF Mono',Monaco,Consolas,monospace;font-size:12.5px;line-height:1.55;background:var(--bg);color:var(--text);resize:vertical;white-space:pre-wrap}
+.copy-modal-body textarea:focus{outline:none;border-color:var(--green)}
+.copy-modal-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.copy-modal-hint{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.55}
+.copy-modal-hint strong{color:var(--green-dark)}
+
+.footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:24px;padding:0 8px}
+.reset-btn{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;margin-top:6px}
+
+@media (max-width:600px){
+  .app{padding:12px 12px 48px}
+  .top-nav{padding:0 4px}
+  .nav-btn{padding:7px 9px;font-size:12px}
+  .step-card{padding:12px 14px}
+  .step-icon{width:34px;height:34px;font-size:13px}
+  .lesson-content{padding:16px}
+  .exercise-card,.quiz-card{padding:16px}
+  .flashcard{min-height:200px;padding:20px 16px}
+  .fc-inner{font-size:14.5px}
+  .flashcard.flipped .fc-inner{font-size:13.5px}
+}
+</style>
+</head>
+<body>
+
+<nav class="top-nav" id="top-nav">
+  <button class="nav-btn active" data-view="view-path">Lärstig</button>
+  <button class="nav-btn" data-view="view-begrepp">Begrepp</button>
+  <button class="nav-btn" data-view="view-flashcards">Kort</button>
+  <button class="nav-btn" data-view="view-kritik">Kritik</button>
+</nav>
+
+<div class="app">
+
+  <div class="view active" id="view-path">
+    <header class="path-header">
+      <h1>Sociologi 1</h1>
+      <p class="subtitle">Din lärstig mot A – 70 steg</p>
+      <div class="path-progress">
+        <div class="progress-bar"><div class="progress-fill" id="global-fill"></div></div>
+        <span class="progress-text" id="global-text">0 % klart</span>
+      </div>
+    </header>
+    <div class="chapter-grid" id="chapter-grid"></div>
+    <p class="footer-note">Dina framsteg sparas lokalt i webbläsaren.<br>
+      <button class="reset-btn" id="reset-btn">Återställ alla framsteg</button>
+    </p>
+  </div>
+
+  <div class="view" id="view-chapter">
+    <div class="view-head">
+      <button class="back-btn" id="chapter-back">←</button>
+      <div>
+        <h2 class="view-title" id="chapter-title"></h2>
+        <p class="view-sub" id="chapter-sub"></p>
+      </div>
+    </div>
+    <div class="step-list" id="step-list"></div>
+  </div>
+
+  <div class="view" id="view-step">
+    <div class="view-head">
+      <button class="back-btn" id="step-back">←</button>
+      <div>
+        <span class="level-badge" id="step-level"></span>
+        <h2 class="view-title" id="step-title" style="margin-top:6px"></h2>
+      </div>
+    </div>
+    <div id="step-body"></div>
+  </div>
+
+  <div class="view" id="view-begrepp">
+    <div class="view-head"><div>
+      <h2 class="view-title">Begreppsbank</h2>
+      <p class="view-sub">Sökbara definitioner och exempel</p>
+    </div></div>
+    <div class="search-bar"><input type="text" id="begrepp-search" placeholder="Sök begrepp..."></div>
+    <div class="filter-row" id="begrepp-filters"></div>
+    <div id="begrepp-list"></div>
+  </div>
+
+  <div class="view" id="view-flashcards">
+    <div class="view-head"><div>
+      <h2 class="view-title">Flashcards</h2>
+      <p class="view-sub">Aktiv återkallning – klicka för att vända</p>
+    </div></div>
+    <div class="filter-row" id="fc-filters"></div>
+    <div class="fc-counter" id="fc-counter"></div>
+    <div class="flashcard" id="flashcard"><div class="fc-inner" id="fc-inner"></div></div>
+    <p class="fc-hint">Klicka på kortet för att vända</p>
+    <div class="fc-controls">
+      <button class="btn btn-ghost" id="fc-prev">← Föregående</button>
+      <button class="btn btn-ghost" id="fc-next">Nästa →</button>
+    </div>
+    <div class="fc-controls">
+      <button class="btn btn-primary" id="fc-know">Kan</button>
+      <button class="btn btn-ghost" id="fc-review">Repetera</button>
+    </div>
+    <div class="fc-progress" id="fc-progress"></div>
+  </div>
+
+  <div class="view" id="view-kritik">
+    <div class="view-head"><div>
+      <h2 class="view-title">Kritikbank</h2>
+      <p class="view-sub">Invändningar och nyanseringar för A-nivå</p>
+    </div></div>
+    <div id="kritik-list"></div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+<div class="copy-modal" id="copy-modal">
+  <div class="copy-modal-inner">
+    <div class="copy-modal-head">
+      <h3>Kopiera text</h3>
+      <button class="copy-modal-close" id="copy-modal-close" aria-label="Stäng">×</button>
+    </div>
+    <div class="copy-modal-body">
+      <p class="copy-modal-hint">Webbläsaren blockerade automatisk kopiering (vanligt när filen öppnas direkt från datorn). Texten nedan är redan markerad – tryck <strong>Ctrl+C</strong> (Windows) eller <strong>Cmd+C</strong> (Mac) för att kopiera, klistra sedan in i din AI.</p>
+      <textarea id="copy-modal-text" readonly></textarea>
+    </div>
+    <div class="copy-modal-foot">
+      <button class="btn btn-ghost" id="copy-modal-close-2">Stäng</button>
+      <button class="btn btn-primary" id="copy-modal-retry">Försök kopiera igen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   KUNSKAPSKRAV – exakta citat från betygskriterierna
+   ============================================================ */
+const KUNSKAPSKRAV = {
+E: "Eleven beskriver översiktligt olika samhällsförhållanden, sociala strukturer och normer samt kategoriseringar av människor. Dessutom redogör eleven översiktligt för hur dessa påverkar människors villkor och hur människor påverkar samhället. I beskrivningar och redogörelser använder eleven med viss säkerhet centrala begrepp, teorier och modeller samt förklarar enkla samband och drar enkla slutsatser. Eleven söker och bearbetar med viss säkerhet information från olika källor samt värderar den med enkla omdömen. Eleven diskuterar översiktligt egna och andras attityder, värderingar och handlingar. I diskussioner framför eleven enkla argument för sina åsikter samt visar respekt för andras åsikter. Dessutom gör eleven enkla reflektioner över kulturmöten och sociala processer.",
+C: "Eleven beskriver utförligt olika samhällsförhållanden, sociala strukturer och normer samt kategoriseringar av människor. Dessutom redogör eleven utförligt för hur dessa påverkar människors villkor och hur människor påverkar samhället. I beskrivningar och redogörelser använder eleven med viss säkerhet centrala begrepp, teorier och modeller samt förklarar samband och drar välgrundade slutsatser. Eleven söker och bearbetar med viss säkerhet information från olika källor samt värderar den med nyanserade omdömen. Eleven diskuterar utförligt egna och andras attityder, värderingar och handlingar. I diskussioner framför eleven välgrundade argument för sina åsikter samt visar respekt för andras åsikter. Dessutom gör eleven välgrundade reflektioner över kulturmöten och sociala processer.",
+A: "Eleven beskriver utförligt och nyanserat olika samhällsförhållanden, sociala strukturer och normer samt kategoriseringar av människor. Dessutom redogör eleven utförligt och nyanserat för hur dessa påverkar människors villkor och hur människor påverkar samhället. I beskrivningar och redogörelser använder eleven med säkerhet centrala begrepp, teorier och modeller samt förklarar komplexa samband och drar välgrundade slutsatser. Dessutom värderar eleven teorierna med nyanserade omdömen och argumenterar för deras styrkor och svagheter. Eleven söker och bearbetar med säkerhet information från olika källor samt värderar den med nyanserade omdömen. Eleven diskuterar utförligt och nyanserat egna och andras attityder, värderingar och handlingar. I diskussioner framför eleven välgrundade och nyanserade argument för sina åsikter samt visar respekt för andras åsikter. Dessutom gör eleven välgrundade och nyanserade reflektioner över kulturmöten och sociala processer."
+};
+
+const chapters = [
+{id:'intro', title:'Introduktion & grundbegrepp', subtitle:'Sociologins grunder', steps:[
+{id:'i1', level:'E', type:'lektion', title:'Vad är sociologi?', content:`
+<p><strong>Sociologi</strong> är vetenskapen om samhället, sociala grupper och relationen mellan individ och samhälle. Det som skiljer sociologin från andra samhällsvetenskaper är att den systematiskt studerar <em>samspelet</em> mellan individ och samhälle – hur människor formas av samhället och samtidigt formar det.</p>
+<h4>Varför är sociologi ett eget ämne?</h4>
+<p>Statsvetenskap studerar makt och institutioner, nationalekonomi studerar marknader och resurser, psykologi studerar den enskilda individens inre. Sociologin studerar det som händer <em>mellan</em> människor – normer, grupper, roller, strukturer – och hur dessa påverkar både individer och samhället i stort. Sociologer frågar sig till exempel: Varför beter vi oss olika i hissen jämfört med hemma? Varför har vissa grupper sämre hälsa? Vad gör att ett samhälle håller ihop?</p>
+<h4>Tre analysnivåer</h4>
+<p>Sociologer arbetar på tre nivåer. Det är viktigt att förstå att dessa inte är separata världar utan hänger samman – samma fenomen kan analyseras på alla tre nivåer samtidigt.</p>
+<ul>
+<li><strong>Mikronivå</strong> – fokus på individen och små grupper. Här studeras ansikte-mot-ansikte-interaktioner, samtal, vardagliga handlingar och hur individer upplever sin situation. Exempel: hur en person sänker rösten på bussen för att inte störa.</li>
+<li><strong>Mesonivå</strong> – fokus på grupper, organisationer och institutioner. Här studeras hur skolor, föreningar, arbetsplatser och andra sammanslutningar fungerar och påverkar sina medlemmar. Exempel: hur en skolas regler och kultur formar elevernas beteende.</li>
+<li><strong>Makronivå</strong> – fokus på stora samhällsstrukturer som ekonomi, politik, klass, religion och kultur. Här studeras övergripande mönster och historiska processer. Exempel: hur klasskillnader påverkar människors livschanser.</li>
+</ul>
+<div class="callout"><strong>Bussen som genomgående exempel:</strong> Tänk dig en buss där en person sänker rösten (mikro). Varför gör hen det? Därför att passagerarna gemensamt upprätthåller en oskriven regel om att inte störa (meso). Och varför finns den regeln? Därför att svensk kultur värderar privatliv och respekt för det offentliga rummet (makro). Samma lilla handling kan alltså förstås på tre nivåer samtidigt.</div>
+<h4>Varför uppstod sociologin?</h4>
+<p>Sociologin är en ung vetenskap – den växte fram under 1800-talet, i kölvattnet av tre stora omvälvningar:</p>
+<ul>
+<li><strong>Upplysningen</strong> – förnuft, vetenskap och kritiskt tänkande började ersätta religion och tradition som förklaring på världen.</li>
+<li><strong>Franska revolutionen (1789)</strong> – synen på makt, samhälle och medborgarskap förändrades i grunden. Gamla hierarkier ifrågasattes.</li>
+<li><strong>Industriella revolutionen</strong> – fabriker, urbanisering och nya samhällsklasser skapade nya sociala problem: fattigdom, trångboddhet, klasskonflikter, barnarbete.</li>
+</ul>
+<p>Sociologin uppstod delvis ur behovet av att förstå dessa snabba förändringar. Den franska tänkaren <strong>Auguste Comte</strong> (1798–1857) myntade begreppet sociologi och menade att samhället borde studeras med samma vetenskapliga metoder som naturen – en tanke som senare utvecklades av Durkheim.</p>`},
+{id:'i2', level:'E', type:'lektion', title:'Centrala begrepp', content:`
+<h4>Grundläggande begrepp</h4>
+<ul>
+<li><strong>Norm</strong> – skriven eller oskriven regel för hur man förväntas bete sig i en given situation. Normer kan vara formella (lagar, skolregler) eller informella (att man hälsar på bekanta, att man inte avbryter). Normer upprätthålls genom sociala sanktioner – positiva reaktioner när vi följer dem, negativa när vi bryter dem.</li>
+<li><strong>Värdering</strong> – en föreställning om vad som är rätt, viktigt eller önskvärt. Värderingar är djupare och mer abstrakta än normer. Exempel: jämlikhet, frihet, respekt för privatliv. Normer är ofta konkreta uttryck för underliggande värderingar – att stå i kö (norm) bygger på värderingen att alla är lika värda.</li>
+<li><strong>Roll</strong> – förväntningar på hur en person ska bete sig utifrån sin position. En person har många roller samtidigt (elev, dotter, vän, anställd) och dessa kan krocka – det kallas <em>rollkonflikt</em>.</li>
+<li><strong>Grupp</strong> – människor som på något sätt hör ihop och påverkar varandra. Grupper kan vara primära (familj, nära vänner – känslomässiga band) eller sekundära (klass, kollegor – mer formella).</li>
+<li><strong>Socialisation</strong> – den livslånga process där individen lär sig samhällets normer, värderingar, språk och beteenden. Primär socialisation sker i familjen under barndomen; sekundär socialisation sker i skolan, arbetslivet och andra sammanhang senare i livet.</li>
+<li><strong>Kultur</strong> – gemensamma normer, värderingar, traditioner, kunskaper och sätt att leva som delas av en grupp eller ett samhälle. Kultur är inte bara "konst och musik" utan hela det meningssystem som gör att vi kan förstå varandra.</li>
+<li><strong>Intersektionalitet</strong> – begreppet beskriver hur flera sociala kategorier (kön, klass, etnicitet, ålder, sexualitet, funktionsvariation) samspelar och skapar <em>unika</em> erfarenheter av privilegier och förtryck. En ung kvinna med utländsk bakgrund och låg inkomst möter inte samma hinder som en ung man med svensk bakgrund och hög inkomst – och hennes situation kan inte förstås genom att bara titta på en av faktorerna i taget. Begreppet myntades av Kimberlé Crenshaw 1989.</li>
+</ul>
+<div class="callout"><strong>Varför är dessa begrepp viktiga?</strong> De utgör det "språk" sociologer använder för att beskriva och analysera samhället. Att kunna använda dem korrekt – och skilja mellan dem – är grunden för all sociologisk analys.</div>`},
+{id:'i3', level:'E', type:'lektion', title:'Det moderna samhällets framväxt', content:`
+<h4>Fyra centrala processer i kursens urval</h4>
+<p>Det moderna samhället växte fram genom flera samverkande processer. I den här kursen betonas särskilt fyra:</p>
+<ul>
+<li><strong>Industrialisering</strong> – övergången från jordbruk och hantverk till fabriksproduktion och massproduktion. Detta förändrade arbetslivet i grunden: människor flyttade från gårdar till fabriker, arbetstider och arbetsuppgifter standardiserades, och nya samhällsklasser uppstod (bourgeoisi och proletariat). Industrialiseringen började i England under 1700-talet och spreds över Europa under 1800-talet.</li>
+<li><strong>Urbanisering</strong> – befolkningens flytt från landsbygd till städer. När fabrikerna växte behövdes arbetskraft, och människor flyttade till städerna. Detta skapade nya sociala miljöer – trångboddhet, anonymitet, men också nya möjligheter till arbete och umgänge. Storstaden som socialt fenomen analyserades senare av Simmel.</li>
+<li><strong>Rationalisering</strong> – processen där förnuft, beräkning och effektivitet ersätter tradition, känsla och vana som grund för handlingar. Exempel: byråkratins framväxt, där beslut fattas enligt regler och meriter snarare än personliga relationer. Rationaliseringen analyserades av Weber.</li>
+<li><strong>Sekularisering</strong> – processen där religionens inflytande över samhället minskar. Vetenskapliga förklaringar ersätter religiösa, och religionen blir en privatsak snarare än en samhällelig institution. Sekulariseringen hänger nära samman med rationaliseringen.</li>
+</ul>
+<div class="callout-warn"><strong>Notera:</strong> Detta är ett <em>urval</em> av processer som kursen särskilt betonar – inte en uttömmande lista. <strong>Differentiering</strong> (uppdelningen av samhället i allt fler specialiserade sfärer – arbete, fritid, religion, politik, familj separeras från varandra) är minst lika central i sociologisk modernitetsteori. Durkheim analyserade arbetsdelningen, Simmel analyserade social differentiering. Att dessa fyra valts ut i kursen betyder inte att differentiering är mindre viktig – den är bara ett exempel på hur olika läroböcker lyfter olika aspekter.</div>`},
+{id:'i4', level:'C', type:'lektion', title:'Mesonivån och civilsamhället', content:`
+<p><strong>Mesonivån</strong> är den förmedlande nivån mellan individ och samhälle. Den omfattar organisationer, nätverk och institutioner – det som Alexis de Tocqueville kallade "associationer". Mesonivån är viktig därför att den synliggör hur samhället fungerar <em>mellan</em> individen och staten.</p>
+<h4>Varför är mesonivån central?</h4>
+<p>Individer är inte bara enskilda aktörer – de ingår i grupper, organisationer och nätverk som formar deras beteende. En elev påverkas inte bara av sin familj (mikro) och av samhällets klasstruktur (makro), utan också av skolans kultur, lärarnas förväntningar och klasskamraternas normer (meso). Mesonivån gör det möjligt att studera dessa mellanliggande strukturer utan att fastna i antingen individualism eller strukturalism.</p>
+<h4>Stat och civilsamhälle</h4>
+<ul>
+<li><strong>Staten</strong> – de offentliga institutionerna som styr ett land: regering, riksdag, myndigheter, domstolar, kommuner. Staten har formell makt att stifta lagar, ta ut skatter och utöva våldsmonopol.</li>
+<li><strong>Civilsamhället</strong> – den del av samhället som varken är staten eller näringslivet. Här finns ideella föreningar, frivilligorganisationer, trossamfund, idrottsföreningar och olika nätverk. Civilsamhället är viktigt för demokratin eftersom det ger människor möjlighet att organisera sig, uttrycka åsikter och påverka samhället utanför staten och marknaden.</li>
+</ul>
+<div class="callout">Mesonivån är särskilt användbar för att analysera organisationer. En skola kan till exempel analyseras som en meso-organisation: den har formella regler (schema, betygssystem), informella normer (vilka som är "coola"), hierarkier (rektorer, lärare, elever) och en kultur som påverkar hur eleverna beter sig och tänker.</div>`},
+{id:'i5', level:'C', type:'lektion', title:'Aktör–struktur som analytisk skala', content:`
+<p>Förhållandet mellan aktör och struktur är en av sociologins mest grundläggande frågor. Handlar människor fritt, eller styrs de av samhälleliga strukturer? Svaret är: <em>både och</em> – och det är här begreppet "förklaringsvikt" blir viktigt.</p>
+<h4>Vad menas med förklaringsvikt?</h4>
+<p>När sociologer analyserar ett fenomen måste de bestämma hur mycket av förklaringen som ska läggas på individens val (aktör) och hur mycket som ska läggas på samhälleliga mönster (struktur). Detta är inte en fråga om antingen-eller, utan om <em>grad</em>. I vissa situationer väger strukturen tyngre, i andra aktören.</p>
+<h4>Exempel: yrkesval</h4>
+<p>En elev som väljer yrke är en aktör – hen fattar ett medvetet beslut. Men valmöjligheterna påverkas av klass, kön, utbildning, familjens ekonomi, arbetsmarknadens struktur och kulturella förväntningar (struktur). En elev från en akademisk familj har ofta fler möjligheter och högre förväntningar på sig än en elev från en arbetarfamilj. Både aktören (valet) och strukturen (möjligheterna) behövs för att förstå utfallet.</p>
+<h4>Nyansering – dualitet och strukturation</h4>
+<p>Den brittiska sociologen Anthony Giddens utvecklade begreppet <strong>strukturation</strong> – strukturer är både <em>resultatet av</em> och <em>förutsättningen för</em> mänskligt handlande. Språket är ett exempel: vi följer grammatiska regler (struktur) när vi talar, men reglerna existerar bara genom att vi talar (aktör). Struktur och aktör är alltså inte två separata saker utan två sidor av samma process.</p>
+<div class="callout-warn"><strong>Vanlig missuppfattning:</strong> Att aktör–struktur skulle handla om "relativism". Relativism är ett kunskapsteoretiskt begrepp (uppfattningen att sanning är relativ till kultur eller individ). Den balanserade hållningen mellan aktör och struktur kallas istället <em>dualitet</em>, <em>strukturation</em> eller <em>relationellt perspektiv</em>.</div>`},
+{id:'i6', level:'A', type:'lektion', title:'Nyansering & metakritik', content:`
+<h4>Missuppfattning: strukturalism = determinism</h4>
+<p>En vanlig missuppfattning är att strukturalism innebär att individen är helt determinerad av samhället – att människan bara är en marionett som styrs av strukturer. Så är det inte. Även hos Durkheim, som är den mest strukturalistiske av klassikerna, finns ett utrymme för handling: sociala fakta <em>påverkar</em> oss men <em>ersätter</em> inte vår förmåga att välja och handla. Strukturalism handlar om att förklara <em>var</em> förklaringen ska läggas – inte om att individen saknar agens.</p>
+<h4>Metakritik mot nivåmodellen</h4>
+<p>Uppdelningen i mikro–meso–makro är ett användbart analytiskt verktyg – men det är inte oproblematiskt. Kritiken handlar om att modellen är <em>statisk</em>: den döljer att nivåerna ständigt skapar och omformar varandra. Simmel menade att samhället <em>uppstår</em> i växelverkan mellan individer – det finns alltså ingen fristående "makronivå" som existerar oberoende av de handlingar som skapar den. Samhället är inte en byggnad med tre våningar – det är en pågående process där individer genom sina handlingar ständigt konstituerar det vi kallar "strukturer".</p>
+<h4>Konsekvens för analys</h4>
+<p>För en A-nivåanalys innebär detta att nivåmodellen bör användas medvetet – som ett <em>hjälpmedel</em> att sortera fenomen, inte som en beskrivning av verkligheten. En nyanserad analys noterar både nivåernas analytiska nytta och deras begränsning. Detta är ett exempel på det som betygskriterierna kallar att "värdera teorierna med nyanserade omdömen och argumentera för deras styrkor och svagheter".</p>`},
+{id:'i7', level:'E', type:'quiz', title:'Quiz – Introduktion', questions:[
+{q:'Vilken analysnivå fokuserar på organisationer, föreningar och institutioner?', o:['Mikronivå','Mesonivå','Makronivå','Metanivå'], c:1, e:'Mesonivån är den förmedlande nivån mellan individ (mikro) och samhällsstruktur (makro). Hit hör skolor, föreningar, arbetsplatser och andra organisationer.'},
+{q:'Vad betyder aktör i sociologisk mening?', o:['En samhällsstruktur som styr individen','En individ eller grupp som agerar och gör val','En organisation som kontrollerar andra','En historisk process'], c:1, e:'Aktör avser den handlande individen eller gruppen som gör egna val – till skillnad från strukturen som är de mönster och ramar som påverkar handlandet.'},
+{q:'Vad är en norm?', o:['En skriven lag som alltid följs','En skriven eller oskriven regel för hur man förväntas bete sig','En persons personliga åsikt','En ekonomisk struktur'], c:1, e:'Normer är förväntningar på beteende. De kan vara formella (lagar, skolregler) eller informella (oskrivna regler som att inte prata högt på bussen).'},
+{q:'Vad menas med intersektionalitet?', o:['Att alla människor har samma möjligheter','Att flera sociala faktorer (kön, klass, etnicitet) samspelar och påverkar en persons möjligheter','Att samhället delas in i tre nivåer','Att religionens inflytande minskar'], c:1, e:'Intersektionalitet beskriver hur olika sociala kategorier samverkar och skapar unika erfarenheter av privilegier och förtryck – en ung kvinna med utländsk bakgrund kan möta flera lager av hinder samtidigt.'},
+{q:'I den här kursens genomgång av det moderna samhällets framväxt betonas fyra processer särskilt. Vilken av följande processer hör INTE till dem?', o:['Industrialisering','Urbanisering','Differentiering','Sekularisering'], c:2, e:'De fyra processerna i kursens urval är industrialisering, urbanisering, rationalisering och sekularisering. Differentiering är en minst lika central process i sociologisk modernitetsteori – särskilt hos Durkheim och Simmel – men hör inte till det urval som betonas här.'}
+]},
+{id:'i8', level:'C', type:'skriv', title:'Strukturalism vs individualism', question:'Förklara skillnaden mellan strukturalism och individualism.', model:'Strukturalism betonar att samhällets strukturer (normer, institutioner, klasstillhörighet) formar individens handlande och möjligheter – Durkheim är ett typexempel med sina sociala fakta. Individualism betonar individens fria vilja och förmåga att påverka och förändra samhället – här är aktören utgångspunkten. I praktiken är det en fråga om förklaringsvikt: de flesta sociologer kombinerar båda perspektiven och menar att individ och struktur ömsesidigt påverkar varandra. En nyanserad analys väljer inte sida utan visar hur mycket förklaringsvikt som ska läggas på vardera i en konkret situation.'},
+{id:'i9', level:'A', type:'skriv', title:'Aktör–struktur med eget exempel', question:'Resonera om förhållandet mellan aktör och struktur utifrån ett eget exempel. Diskutera också en begränsning med nivåmodellen mikro–meso–makro.', model:'Ett exempel: en elev väljer yrke (aktör) men valmöjligheterna påverkas av klass, kön, utbildning, familjens ekonomi och arbetsmarknad (struktur). En elev från akademisk familj har ofta fler möjligheter och högre förväntningar på sig än en elev från arbetarfamilj – samma "fria val" får olika konsekvenser beroende på strukturella förutsättningar. En nyanserad analys visar att aktör och struktur ömsesidigt påverkar varandra: eleven formas av strukturen men kan också förändra sina egna förutsättningar genom sina val. En begränsning med nivåmodellen är att den är statisk – den döljer att nivåerna konstituerar varandra. Simmel menade att samhället uppstår i växelverkan mellan individer; det finns ingen fristående makronivå som existerar oberoende av handlingarna som skapar den. Modellen är ett analytiskt hjälpmedel, inte en ontologisk beskrivning av verkligheten.'},
+{id:'i10', level:'A', type:'kritik', title:'Kritik mot nivåmodellen', question:'Formulera en invändning mot nivåmodellen mikro–meso–makro och nyansera invändningen.', model:'Invändning: nivåmodellen är statisk och döljer att nivåerna skapar varandra. Genom att behandla mikro, meso och makro som separata "lager" riskerar man att missa att samhället ständigt produceras i vardagliga handlingar. Simmel menade att samhället uppstår i växelverkan mellan individer – det finns ingen fristående makronivå som existerar oberoende av handlingarna som skapar den. Nyansering: modellen är ett användbart analytiskt hjälpmedel för att sortera fenomen – den ger ett gemensamt språk för att diskutera olika analysnivåer. Men den bör inte förväxlas med en ontologisk beskrivning av samhället. En A-nivåanalys använder modellen medvetet och reflekterar över dess begränsning.'}
+]},
+
+{id:'durk', title:'Émile Durkheim', subtitle:'Sociala fakta och anomi', steps:[
+{id:'d1', level:'E', type:'lektion', title:'Durkheims grundbegrepp', content:`
+<p>Émile Durkheim (1858–1917) är en av sociologins grundare. Hans grundtanke är att samhället är en <em>egen verklighet</em> som inte kan reduceras till individerna – det finns en social nivå som har sina egna lagar och mönster.</p>
+<h4>Positivism</h4>
+<p>Durkheim var <strong>positivist</strong>: han menade att samhället kan studeras med samma vetenskapliga metoder som naturen – genom observation, statistik och systematiska jämförelser. Sociologin skulle vara en objektiv vetenskap.</p>
+<h4>Sociala fakta</h4>
+<p>Centralt för Durkheim är begreppet <strong>sociala fakta</strong> – normer, regler, värderingar och kollektiva föreställningar som existerar <em>utanför</em> individen men som <em>utövar tvång</em> på henne. Sociala fakta kännetecknas av tre saker: de är yttre (existerar utanför individen), de är tvingande (vi kan inte ignorera dem utan konsekvenser) och de är kollektiva (de delas av gruppen). Exempel: språk, lagar, normer för klädsel, pengar.</p>
+<h4>Funktionalism</h4>
+<p>Durkheim är grundare av <strong>funktionalismen</strong> – teorin att samhällets olika delar (skolan, familjen, religionen, ekonomin) fyller funktioner som bidrar till helhetens funktion och stabilitet. Samhället ses som en organism där delarna är beroende av varandra.</p>
+<h4>Anomi, integration och reglering</h4>
+<ul>
+<li><strong>Anomi</strong> – ett tillstånd av normlöshet eller obalans där individen saknar tydliga regler, mål och riktlinjer. Uppstår när samhället genomgår snabba förändringar.</li>
+<li><strong>Integration</strong> – graden av delaktighet i socialt samspel med andra. Hög integration = starka sociala band; låg integration = isolering.</li>
+<li><strong>Reglering</strong> – graden av social kontroll över individens begär och handlingar. Hög reglering = tydliga ramar; låg reglering = gränslöshet.</li>
+</ul>
+<h4>Holism</h4>
+<p><strong>Holism</strong> innebär att helheten är mer än summan av delarna – för att förstå ett fenomen måste man se hur delarna hänger ihop med helheten. En familj är mer än fyra individer; ett samhälle är mer än summan av sina medborgare.</p>`},
+{id:'d2', level:'E', type:'lektion', title:'Fyra självmordstyper', content:`
+<p>Durkheims mest kända studie är <em>Le Suicide</em> (1897), där han använde självmordsstatistik för att visa att även en till synes helt individuell handling har <strong>sociala orsaker</strong>. Detta är ett typexempel på hur Durkheim arbetade: genom att jämföra självmordstal mellan grupper (religion, civilstånd, utbildning, konjunktur) kunde han identifiera sociala mönster.</p>
+<p>Durkheim identifierade fyra typer av självmord, baserade på graden av integration och reglering i samhället:</p>
+<ul>
+<li><strong>Egoistiskt självmord</strong> – uppstår vid <em>för låg integration</em>. Individen är för lite delaktig i socialt samspel, saknar starka band till andra och känner sig isolerad. De egna målen väger tyngre än gruppens. Exempel: en ensamstående person utan nära relationer eller socialt nätverk.</li>
+<li><strong>Altruistiskt självmord</strong> – uppstår vid <em>för stark integration</em>. Individen är så starkt knuten till gruppen att det egna livet förlorar betydelse – gruppen är viktigare än individen. Individen offrar sig för något högre. Exempel: kamikazepiloter, äldre i vissa kulturer som väljer att dö för att inte bli en börda, änkan som följer sin man i döden.</li>
+<li><strong>Anomiskt självmord</strong> – uppstår vid <em>för låg reglering eller snabb förändring</em>. När samhället genomgår snabba förändringar (ekonomisk kris, plötslig framgång, skilsmässa) försvagas gamla normer och individen vet inte längre vad som förväntas. Detta skapar en känsla av meningslöshet och kaos.</li>
+<li><strong>Fatalistiskt självmord</strong> – uppstår vid <em>för stark reglering</em>. Individen är så hårt styrd av regler och kontroll att framtiden känns stängd och hopplös. Individen ser ingen möjlighet till förändring. Exempel: slavar i extrema diktaturer, fångar i totala institutioner, personer i starkt patriarkala samhällen där de inte har någon handlingsfrihet.</li>
+</ul>
+<div class="callout"><strong>Varför presenteras ofta bara tre?</strong> Den fatalistiska typen behandlas mycket kortfattat i Durkheims eget verk – den nämns bara i en fotnot i <em>Le Suicide</em>. Därför har den ofta utelämnats i kortare framställningar och läroböcker. Här tar vi med alla fyra för fullständighetens skull, eftersom en komplett förståelse av Durkheims typologi kräver alla fyra.</div>
+<div class="callout"><strong>Viktigt att notera:</strong> Durkheim menade inte att den ena typen utesluter den andra – i praktiken kan ett självmord ha inslag av flera typer. Typologin är ett analytiskt verktyg för att förstå de sociala mekanismerna bakom, inte en metod för att etikettera enskilda fall.</div>`},
+{id:'d3', level:'E', type:'lektion', title:'Integration – statistiska mönster', content:`
+<p>Durkheim jämförde självmordstal mellan olika grupper och fann systematiska mönster som pekade på att integration och reglering påverkar risken. Detta var revolutionerande eftersom det visade att självmord inte bara är en psykologisk fråga utan också en social.</p>
+<h4>Mönster Durkheim identifierade</h4>
+<ul>
+<li><strong>Civilstånd:</strong> Ogifta hade högre självmordstal än gifta. Äktenskapet ger social integration och ömsesidigt ansvar, vilket skyddar. Bland gifta hade dock barnlösa högre tal än de med barn – barn ökar integrationen ytterligare.</li>
+<li><strong>Religion:</strong> Protestanter hade högre självmordstal än katoliker, och judar hade lägst. Förklaringen: protestantismen betonar individuellt ansvar och fri tolkning (vilket minskar kollektiv sammanhållning), medan katolicismen och judendomen har starkare kollektiva strukturer och gemenskap.</li>
+<li><strong>Utbildning:</strong> Högutbildade hade generellt högre självmordstal än lågutbildade. Förklaringen är dock inte utbildningen i sig – utan att högre utbildning ofta innebär mer individuellt tänkande och svagare kollektiva band.</li>
+<li><strong>Ekonomisk konjunktur:</strong> Både hög- och lågkonjunktur ökade självmordstalen jämfört med stabila perioder. Krig minskade självmordstalen – eftersom krig skapar starkare kollektiv sammanhållning.</li>
+</ul>
+<div class="callout"><strong>Det är <em>förändringen</em> som ökar risken, inte fattigdomen i sig.</strong> Durkheim menade att det är de snabba skiftena i livsvillkor – inte den absoluta nivån av välstånd – som skapar anomi. Detta är en viktig nyans: en fattig men stabil tillvaro kan till och med skydda, eftersom den ger tydliga ramar.</div>
+<div class="callout-warn"><strong>Judarnas undantag – viktig nyansering:</strong> Judarna var ett viktigt undantag från mönstret att hög utbildning korrelerar med höga självmordstal. Judarna var högutbildade men hade ändå låga självmordstal – eftersom utbildningen inte lossrev dem från den religiösa och kulturella gemenskapen. Detta visar att det är <em>integrationen</em>, inte utbildningen i sig, som är den avgörande faktorn. Undantaget illustrerar hur Durkheim tänkte: det är inte enskilda faktorer som religion eller utbildning som förklarar, utan hur dessa påverkar individens sociala integration.</div>`},
+{id:'d4', level:'C', type:'lektion', title:'Varför påverkar integration självmordstalet?', content:`
+<p>Durkheims grundläggande tes är att <strong>ju starkare social integration, desto mindre risk för egoistiskt självmord</strong>. Men varför? Svaret ligger i hans syn på människan som en social varelse vars begär och mening skapas i relation till andra.</p>
+<h4>Integration och kunskap</h4>
+<p>Protestantismen tillåter i högre grad tankens frihet och individen skapar själv sin tolkning av tron. Detta leder till mer fritt tänkande – men också mindre kollektiv sammanhållning. När individen själv måste skapa mening utan stöd från en stark gemenskap ökar risken för isolering och meningslöshet. Judarna visar dock att kunskap inte <em>nödvändigtvis</em> splittrar: de hade hög utbildning men behöll stark gemenskap, eftersom utbildningen inte utmanade de grundläggande religiösa banden.</p>
+<h4>Integration och äktenskap</h4>
+<p>Äktenskapet minskar risken för självmord betydligt – särskilt för män – eftersom det ger daglig social integration, ömsesidigt ansvar och en stabil struktur. Men effekten varierar: äktenskap i unga åldrar (under 20) kan till och med <em>öka</em> risken, eftersom unga män inte är mogna för de krav som äktenskapet ställer. Skilsmässor minskar risken för kvinnor (som ofta är mer isolerade i äktenskapet) men ökar risken för män.</p>
+<h4>Integration och politik</h4>
+<p>Revolutioner, krig och stora samhällsförändringar skapar starka kollektiva känslor som får människor att gå samman i gemensamma projekt. Detta <em>minskar</em> risken för självmord – men bara tillfälligt. När den kollektiva entusiasmen lägger sig återgår självmordstalen till det normala.</p>
+<div class="callout"><strong>Slutsats:</strong> Integration är dubbelriktad – för lite integration leder till egoistiskt självmord, för mycket leder till altruistiskt. Det finns en "optimal" nivå av integration där individen varken är isolerad eller absorberad av gruppen. Durkheim menade dock att det moderna samhället rör sig mot allt svagare integration – och att detta är ett av modernitetens stora problem.</div>`},
+{id:'d5', level:'C', type:'lektion', title:'Anomi i samtiden', content:`
+<p><strong>Anomi</strong> är inte bara ett historiskt begrepp – det är fortfarande användbart för att förstå samtida fenomen. Anomi uppstår när samhället genomgår snabba förändringar som upplöser gamla normer och mål, utan att nya har hunnit etableras.</p>
+<h4>Nutida exempel på anomi</h4>
+<ul>
+<li><strong>Pandemin (2020–2022)</strong> – vardagslivet förändrades radikalt över en natt. Normer kring umgänge, arbete, resor och sociala kontakter upplöstes tillfälligt. Människor visste inte längre vad som förväntades. Studier har visat att psykisk ohälsa ökade under pandemin – särskilt bland unga – vilket kan förstås som ett uttryck för anomi.</li>
+<li><strong>Sociala medier</strong> – sociala medier skapar ständiga jämförelser med andras till synes perfekta liv. Det finns inga tydliga sociala spelregler för hur man ska bete sig, vad som är "rätt" att lägga upp eller hur man ska förhålla sig till andras inlägg. Detta skapar en känsla av normlöshet och otillräcklighet – en form av anomi.</li>
+<li><strong>Digitaliseringens omvälvning</strong> – AI, automatisering och nya yrken skapar ständigt nya förutsättningar. Gamla yrkesroller försvinner, nya uppstår. Människor som utbildats för ett yrke som automatiseras bort kan uppleva anomi – meningslöshet och normlöshet kring vad de ska göra med sina liv.</li>
+<li><strong>Ekonomiska kriser</strong> – plötsliga förändringar i livsvillkor (arbetslöshet, konkurs, förlorade besparingar) kan upplösa den struktur som tidigare gav livet mening. Detta är ett klassiskt exempel på anomi.</li>
+</ul>
+<p><strong>Viktigt:</strong> Anomi är inte detsamma som fattigdom eller olycka. Det är <em>förändringen</em> och <em>normupplösningen</em> som skapar obalans. En fattig men stabil tillvaro kan vara skyddande; en plötslig försämring från en trygg position kan vara mer anomisk än kronisk fattigdom.</p>`},
+{id:'d6', level:'A', type:'lektion', title:'Nyansering & kritik', content:`
+<p>Durkheims teori har utsatts för omfattande kritik – särskilt hans användning av statistik och hans anspråk på objektivitet.</p>
+<h4>Douglas kritik (1967)</h4>
+<p>Den amerikanske sociologen Jack Douglas visade i <em>The Social Meanings of Suicide</em> (1967) att de officiella statistikkategorierna för självmord är <strong>socialt konstruerade</strong>. Vad som räknas som självmord varierar mellan länder, tidsperioder och myndigheter. Vissa dödsfall registreras som olyckor eller "okänd orsak" av hänsyn till familjen eller på grund av religiösa tabun. Detta innebär att Durkheims statistiska bas är otillförlitlig – och att hans slutsatser vilar på data som kan vara systematiskt snedvridna.</p>
+<p>Douglas menar också att Durkheim inte kan belägga att de <em>sociala betydelser</em> han tillskriver självmorden verkligen är desamma som de avsedda betydelserna hos de individer som begick självmord. Durkheim behandlar alla självmord som likvärdiga, men i själva verket kan olika självmord ha helt olika innebörd för den som begår dem.</p>
+<h4>Objektivismens blindfläck</h4>
+<p>Durkheims objektivism har en grundläggande svaghet: han <strong>förutsätter</strong> att sociala fakta kan studeras som "ting", men han har ingen metod för att verifiera att hans tolkning av självmordens sociala mening är korrekt. Han kan inte komma åt den inre psykologiska mening som driver individen – han studerar bara det yttre beteendet (statistik) och drar slutsatser om det inre (mening). Detta är ett <em>metodologiskt gap</em> som går rakt in i hans positivistiska program.</p>
+<h4>Hur ska man förhålla sig till kritiken?</h4>
+<p>Teorin är <strong>starkast som diagnos</strong> av sociala mönster – Durkheim visar övertygande att självmord har sociala orsaker och att integration spelar roll. Teorin är <strong>svagare som förklaring</strong> av individuella handlingar – den kan inte förklara varför en specifik person begår självmord, bara varför vissa grupper har högre tal. För en A-nivåanalys är det centralt att kunna använda Durkheims teori <em>med</em> denna kritik i åtanke – inte som en heltäckande sanning utan som ett kraftfullt men begränsat analysverktyg.</p>
+<p class="footnote">Källa: Douglas, J. (1967), The Social Meanings of Suicide. Princeton University Press.</p>`},
+{id:'d7', level:'E', type:'quiz', title:'Quiz – Durkheim', questions:[
+{q:'Vad menar Durkheim med anomi?', o:['För stark social integration','Normlöshet eller obalans där individen saknar tydliga regler och mål','En form av altruistiskt självmord','Att samhället är i perfekt balans'], c:1, e:'Anomi är ett tillstånd av normlöshet eller obalans – individen saknar tydliga regler och mål. Det uppstår ofta vid snabba samhällsförändringar.'},
+{q:'Vilken typ av självmord identifierar Durkheim vid FÖR STARK integration?', o:['Egoistiskt','Altruistiskt','Anomiskt','Fatalistiskt'], c:1, e:'Altruistiskt självmord uppstår när individen underordnar sig gruppen så starkt att det egna livet förlorar betydelse – gruppen blir viktigare än individen.'},
+{q:'Vilken typ av självmord uppstår vid FÖR STARK reglering?', o:['Egoistiskt','Altruistiskt','Anomiskt','Fatalistiskt'], c:3, e:'Fatalistiskt självmord uppstår när individen är så hårt styrd av regler att framtiden känns stängd – hen ser ingen möjlighet till förändring.'},
+{q:'Vad är ett socialt faktum?', o:['En individs personliga åsikt','En norm eller värdering som existerar utanför individen men påverkar handlingar','En psykisk sjukdom','En genetisk egenskap'], c:1, e:'Sociala fakta är kollektiva normer som existerar utanför individen men utövar tvång på handlandet – de är yttre, tvingande och kollektiva.'},
+{q:'Vilken grupp hade enligt Durkheim LÄGST självmordstal?', o:['Ogifta män','Protestanter','Judar','Högutbildade'], c:2, e:'Judar hade låga självmordstal – trots hög utbildning – eftersom de behöll en stark religiös och kulturell sammanhållning. Detta visar att det är integrationen, inte utbildningen, som förklarar mönstret.'}
+]},
+{id:'d8', level:'C', type:'skriv', title:'Sociala fakta', question:'Förklara vad Durkheim menar med sociala fakta och varför de är centrala i hans teori.', model:'Sociala fakta är normer, regler, värderingar och kollektiva föreställningar som existerar utanför individen men påverkar hur människor tänker och handlar. De kännetecknas av tre saker: de är yttre (existerar utanför individen), de är tvingande (vi kan inte ignorera dem utan konsekvenser) och de är kollektiva (de delas av gruppen). De är centrala i Durkheims teori eftersom han menar att samhället inte kan reduceras till individerna – det finns en social verklighet som är sui generis (av egen art) och som utövar tvång på individen. Därför kan samhället studeras objektivt, som naturvetenskapen studerar naturen. Sociala fakta är det som gör sociologin till en egen vetenskap – inte bara en samling psykologiska observationer.'},
+{id:'d9', level:'A', type:'fall', title:'Sarah – altruistiskt självmord', context:'Sarah växte upp i en starkt religiös och kulturellt sammansvetsad by. Hela hennes liv präglades av gemenskapens värderingar och av att sätta kollektivet framför individen. Hennes självkänsla var djupt rotad i rollen som självuppoffrande medlem. När en epidemi bryter ut arbetar hon outtröttligt för de sjuka, trots varningar. När hon själv blir sjuk känner hon förlamande skuld och meningslöshet, och beslutar att avsluta sitt liv som en sista tjänst för byn.', question:'Analysera Sarahs handling utifrån Durkheims självmordstyper. Vilken typ passar bäst och varför? Diskutera också en kritik mot Durkheims teori.', model:'Sarahs fall är ett typiskt altruistiskt självmord: integrationen i byns kollektiv är så stark att hennes självkänsla är helt beroende av rollen som självuppoffrande medlem. Hennes värde som människa är direkt kopplat till hennes tjänst för gruppen – när hon inte längre kan bidra kollapsar hennes identitet. När hon inte längre kan arbeta uppstår en förlamande meningslöshet, och hon ser självmordet som en sista tjänst för byn. Det är gruppens övertryck – inte individens egoism – som driver handlingen. En kritik mot Durkheim är att hans statistik vilar på socialt konstruerade kategorier (Douglas 1967), och att hans teori inte kan fånga den subjektiva mening som Sarah själv tillskriver handlingen. Teorin förklarar det sociala mönstret men inte den individuella upplevelsen – den säger oss varför altruistiska självmord är vanligare i starkt integrerade samhällen, men inte varför just Sarah väljer att dö.'},
+{id:'d10', level:'A', type:'kritik', title:'Kritik mot Durkheim', question:'Formulera två invändningar mot Durkheims självmordsteori och nyansera dem.', model:'Invändning 1: Jack Douglas (1967) visar att statistikkategorierna är socialt konstruerade – vad som räknas som självmord varierar mellan länder, tidsperioder och myndigheter. Durkheim kan därför inte belägga att hans tolkning av självmordens mening stämmer med individernas egna. Invändning 2: Hans objektivism förutsätter att sociala fakta kan studeras som ting, men saknar metod för att verifiera den mening som driver individen – det finns ett metodologiskt gap mellan det yttre beteendet (statistik) och den inre meningen. Nyansering: Teorin är starkast som diagnos av sociala mönster, svagare som förklaring av individuella handlingar. Den fungerar väl som analysverktyg om man kompletterar med kvalitativa metoder – intervjuer, psykologiska studier – för att komma åt den subjektiva dimensionen. En A-nivåanalys använder Durkheim medvetet: som ett verktyg för att se sociala mönster, inte som en heltäckande förklaring.'}
+]},
+
+{id:'marx', title:'Karl Marx', subtitle:'Klass, mervärde och alienation', steps:[
+{id:'m1', level:'E', type:'lektion', title:'Marx grundbegrepp', content:`
+<p>Karl Marx (1818–1883) är en av sociologins mest inflytelserika tänkare. Hans grundtanke är att <strong>det ekonomiska systemet</strong> – hur produktionen är organiserad och vem som äger vad – är avgörande för hur samhället i övrigt ser ut.</p>
+<h4>Centrala begrepp</h4>
+<ul>
+<li><strong>Bas</strong> – den ekonomiska strukturen, det vill säga produktionsförhållandena och produktionsmedlen. Basen är samhällets "fundament".</li>
+<li><strong>Överbyggnad</strong> – politik, rätt, religion, kultur, ideologi – det som vilar på basen och formas av den. Enligt Marx formas överbyggnaden av basen: de som äger produktionsmedlen har också makt att forma samhällets idéer och institutioner.</li>
+<li><strong>Bourgeoisi</strong> – ägarna av produktionsmedlen (kapitalisterna). De äger fabriker, maskiner, mark och kapital.</li>
+<li><strong>Proletariat</strong> – arbetarna som saknar produktionsmedel och därför måste sälja sin arbetskraft för lön.</li>
+<li><strong>Produktionsmedel</strong> – de resurser som används i produktionen utöver arbetskraften: råvaror, maskiner, verktyg, mark, byggnader.</li>
+<li><strong>Produktionsförhållanden</strong> – relationerna mellan människor i produktionen, särskilt mellan ägare och arbetare. Vem bestämmer? Vem arbetar? Vem får vinsten?</li>
+<li><strong>Mervärde</strong> – skillnaden mellan det värde arbetaren skapar och den lön arbetaren får. Mervärdet tillägnas av kapitalisten och är grunden för vinsten.</li>
+<li><strong>Alienation</strong> – när människan blir främmande inför sitt arbete, sina produkter, sig själv och andra människor. Uppstår när arbetet inte längre är ett uttryck för människan utan ett medel för överlevnad.</li>
+<li><strong>Klasskonflikt</strong> – motsättningen mellan bourgeoisi och proletariat. Marx menade att denna konflikt driver historien framåt.</li>
+<li><strong>Historisk materialism</strong> – Marx teori att historien rör sig genom olika produktionssätt (slaveri, feodalism, kapitalism, kommunism) som drivs av materiella motsättningar mellan klasser.</li>
+</ul>
+<div class="callout-warn"><strong>Viktigt:</strong> Marx term är <em>historisk materialism</em> (eller historiematerialism) – inte "historicism". Historicism är en bredare historiefilosofisk tradition som hävdar att verkligheten är historiskt betingad och att företeelser måste förstås utifrån sin historiska utveckling. Begreppen är närbesläktade men inte identiska – historicism är inte den term Marx använde för sin stadieteori.</div>`},
+{id:'m2', level:'E', type:'lektion', title:'Mervärde – tröjexemplet', content:`
+<p>Mervärde är ett av Marx mest centrala begrepp – det förklarar <em>varifrån vinsten kommer</em>.</p>
+<h4>Varan</h4>
+<p>Allt som produceras för att säljas är en vara. En vara har två sidor: ett <strong>bruksvärde</strong> (den har ett praktiskt användningsområde – mat mättar, skor skyddar fötterna) och ett <strong>bytesvärde</strong> (den kan bytas mot andra varor, uttryckt i pris).</p>
+<h4>Mervärde – exemplet med tröjor</h4>
+<p>Tänk dig en arbetare som syr tröjor på en fabrik. Lönen är 600 kr per dag. Efter sex timmar har arbetaren producerat tröjor till ett värde av 600 kr plus materialkostnad – det vill säga arbetaren har redan täckt sin egen lön. Men arbetaren jobbar tio timmar. De återstående fyra timmarna producerar hen ett värde som <em>inte</em> går tillbaka till henne själv – det går till fabriksägaren. Detta överskott är <strong>mervärdet</strong>.</p>
+<p>Mervärdet är inte en ekonomisk slump – det är en <em>strukturell maktrelation</em>. Kapitalisten kan tillägna sig mervärdet eftersom hen äger produktionsmedlen och arbetaren saknar dem. Arbetaren har inget val: hen måste sälja sin arbetskraft för att överleva, och ägaren kan bestämma villkoren.</p>
+<div class="callout"><strong>Varför är detta viktigt?</strong> Mervärdesbegreppet förklarar att vinst <em>inte</em> uppstår genom att köpa billigt och sälja dyrt (som i handel), utan genom att arbetaren producerar ett värde som är större än lönen. Detta synliggör den underliggande maktrelationen mellan ägare och arbetare – en relation som Marx menade är kapitalismens kärna.</div>`},
+{id:'m3', level:'E', type:'lektion', title:'Produktionsmedel och klasskamp', content:`
+<h4>Produktionsmedel</h4>
+<p><strong>Produktionsmedel</strong> är allt som behövs för att producera varor <em>utöver</em> arbetskraften: råvaror, maskiner, verktyg, mark, byggnader. Enligt Marx ägs produktionsmedlen av kapitalisterna (bourgeoisin), medan arbetarna (proletariatet) endast äger sin arbetskraft.</p>
+<div class="callout-warn"><strong>Viktig distinktion:</strong> Produktionsmedel är Marx term. Det neoklassiska nationalekonomiska begreppet <em>produktionsfaktorer</em> (land, arbete, kapital, entreprenörskap) är inte synonymt. Marx skiljer tvärtom mellan produktionsmedel (konstant kapital) och arbetskraft (variabelt kapital) – det är just denna distinktion som gör hans mervärdesteori möjlig. Att använda termerna som synonymer är felaktigt.</div>
+<h4>Klasskamp</h4>
+<p>Kapitalisterna konkurrerar inte bara med proletärerna – de konkurrerar också med <em>varandra</em>. Varje kapitalist måste hela tiden försöka hålla nere sina kostnader för att inte konkurreras ut. Detta leder till att ägandet koncentreras i allt färre händer – de stora företagen slår ut de små.</p>
+<p>Marx menade att denna process till slut leder till en revolutionär situation: proletariatet blir allt större och fattigare medan bourgeoisin blir allt färre och rikare. Då uppstår en klasskamp som <em>driver historien framåt</em>. Steget efter kapitalismen är enligt Marx kommunism, där produktionsmedlen ägs gemensamt och klasserna upplöses.</p>`},
+{id:'m4', level:'C', type:'lektion', title:'Klassmedvetande', content:`
+<p><strong>Klassmedvetande</strong> är ett centralt begrepp hos Marx – det förklarar hur klasskampen uppstår.</p>
+<h4>Vad är klassmedvetande?</h4>
+<p>Klassmedvetande innebär att arbetarna inser sin <em>gemensamma</em> situation och sina <em>gemensamma</em> intressen. Istället för att se sina problem som individuella otur ("jag har bara dålig lön", "jag hade otur som fick det här jobbet") börjar arbetarna se att problemen är strukturella och delas av alla i samma situation.</p>
+<h4>Hinder för klassmedvetande</h4>
+<p>Marx menade att kapitalisterna aktivt förhindrar klassmedvetande genom att sprida <strong>"illusionen av möjligheter"</strong> – idén att alla har möjlighet att förändra sitt liv bara de vill och arbetar hårt. Om arbetaren tror att hen kan bli rik genom hårt arbete, ser hen ingen anledning att göra uppror mot systemet. Denna illusion är en del av överbyggnaden – kulturella idéer som tjänar basens intressen.</p>
+<h4>Hur uppstår klassmedvetande?</h4>
+<p>När arbetarna börjar prata med varandra om sina arbetsvillkor uppstår ett <strong>vi-mot-dem-tänk</strong>. Problemen ses inte längre som individuella utan som gemensamma. Kollektivet blir en kraft – utan proletärerna står fabrikerna tomma. Detta kan leda till organisering (fackföreningar, strejker) och ytterst till revolution.</p>
+<div class="callout"><strong>Exempel från fabriksberättelsen:</strong> När Anna och hennes kollegor börjar prata om sina villkor upptäcker de att de alla känner sig utnyttjade. Det som tidigare kändes som personlig otur ("jag är bara dålig på att förhandla") blir plötsligt en kollektiv insikt ("vi är alla utsatta för samma sak"). Detta är klassmedvetande i vardande.</div>`},
+{id:'m5', level:'C', type:'lektion', title:'Alienationens fyra aspekter', content:`
+<p><strong>Alienation</strong> är ett av Marx mest använda begrepp – och ett av de mest missförstådda. Alienation är inte bara "att känna sig tråkig på jobbet" – det är en djupgående process där människan förlorar kontakten med sitt eget mänskliga väsen.</p>
+<h4>Vad gör människan unik?</h4>
+<p>Marx menade att det som skiljer människan från djuren är att hon är en <em>skapande</em> varelse. Djuret arbetar instinktivt (biet bygger sin kupa utan att tänka på det), men människan arbetar medvetet och kan forma sin egen värld. Arbetet är alltså människans sätt att uttrycka sig som människa – det är genom arbetet hon skapar mening och identitet.</p>
+<h4>Alienationens fyra aspekter</h4>
+<p>Marx beskriver alienationen i fyra aspekter som alla hänger samman:</p>
+<ol>
+<li><strong>Alienation från produkten</strong> – arbetaren ser inte och äger inte det hen producerar. I industrin producerar arbetaren en liten del av en produkt som hen aldrig ser färdig och aldrig får behålla. Produkten tillhör någon annan. Arbetaren har alltså ingen relation till resultatet av sitt arbete.</li>
+<li><strong>Alienation från arbetsprocessen</strong> – arbetet är inte självbestämmande. Arbetaren kan inte bestämma vad, hur eller när hen ska arbeta. Arbetet är något som <em>görs mot</em> arbetaren snarare än något hen <em>utför</em>. Det är styrt utifrån (av ägaren, av maskinerna, av tidtagaruret).</li>
+<li><strong>Alienation från sig själv som artväsen</strong> – människan förlorar kontakten med sitt egentliga, skapande väsen. När arbetet reduceras till ett medel för överlevnad – något man gör för att få lön, inte för att det är meningsfullt – förlorar människan kontakten med det som gör henne till människa. Hen blir som ett djur som arbetar instinktivt.</li>
+<li><strong>Alienation från andra människor</strong> – arbetet blir ett konkurrensförhållande istället för ett samarbete. Kollegor blir konkurrenter om jobb och lön. Människor behandlar varandra som objekt, som medel för att uppnå sina egna mål.</li>
+</ol>
+<div class="callout"><strong>Jämför med Durkheims anomi:</strong> Båda beskriver en form av meningslöshet – men orsaken är olika. Marx fokuserar på <em>arbetets</em> organisering (alienation uppstår i produktionsprocessen), medan Durkheim fokuserar på <em>normernas</em> upplösning (anomi uppstår när samhället förlorar sina gemensamma regler). För Marx är alienationen strukturell och kan bara lösas genom att förändra produktionsförhållandena; för Durkheim är anomi en tillfällig obalans som kan lösas genom att återupprätta social integration.</div>`},
+{id:'m6', level:'A', type:'lektion', title:'Nyansering & kritik', content:`
+<p>Marx teori har kritiserats från flera håll. Det är viktigt att förstå kritiken för att kunna använda Marx på ett nyanserat sätt – inte som en dogm utan som ett analysverktyg.</p>
+<h4>Förutsägelserna slog inte in</h4>
+<p>Marx förutsåg att kapitalismen skulle leda till en revolutionär situation där proletariatet tog makten. Så blev det inte i Västeuropa. Istället reformerades kapitalismen genom fackföreningar, välfärdsstaten och demokratiska reformer. Arbetarklassens levnadsvillkor förbättrades gradvis – inte genom revolution utan genom politiska kompromisser. Marx underskattade kapitalismens förmåga att anpassa sig.</p>
+<h4>Ekonomisk reduktionism</h4>
+<p>Marx reducerar historiska utvecklingsförlopp till i första hand <em>ekonomi</em>. Därmed bortser teorin från faktorer som genus, etnicitet, religion och politik – faktorer som inte kan förklaras enbart ekonomiskt. Webers sociologi kritiserar Marx just för denna ekonomiska reduktionism: Webers analys av rationaliseringens framväxt visar att kulturella och religiösa faktorer har egen kraft – de är inte bara spegelbilder av ekonomiska förhållanden.</p>
+<h4>Klassbegreppets otillräcklighet</h4>
+<p>Dagens samhälle har en mycket mer komplex klassstruktur än Marx binära uppdelning bourgeoisi/proletariat. Vi har tjänstesektor, medelklass, precariat (osäkra anställningar), globala produktionskedjor och en växande klyfta mellan hög- och låginkomsttagare inom samma "klass". Marx klassbegrepp fångar inte dessa nyanser.</p>
+<h4>Hur ska man förhålla sig till kritiken?</h4>
+<p>En nyanserad försvarsstrategi är att <strong>skilja mellan Marx analytiska kärna och hans historiska prognoser</strong>:</p>
+<ul>
+<li>Den <em>analytiska kärnan</em> – att ekonomiska strukturer formar maktrelationer, att arbete kan vara alienerande, att klass spelar roll – är fortfarande användbar för att förstå nutida fenomen som gigekonomi, globala produktionskedjor och ojämlikhet.</li>
+<li>De <em>historiska prognoserna</em> – att revolutionen är oundviklig, att klasserna kommer att polariseras, att kommunismen är nästa steg – har inte besannats.</li>
+</ul>
+<p>En A-nivåanalys använder Marx analytiska kärna men förhåller sig kritisk till hans historiska förutsägelser. Detta är ett exempel på det betygskriterierna kallar att "värdera teorierna med nyanserade omdömen och argumentera för deras styrkor och svagheter".</p>`},
+{id:'m7', level:'E', type:'quiz', title:'Quiz – Marx', questions:[
+{q:'Vad menar Marx med mervärde?', o:['Värdet av en färdig produkt','Skillnaden mellan värdet arbetaren skapar och lönen arbetaren får','Statens skatteintäkter','Arbetarens sparkapital'], c:1, e:'Mervärde är det överskott arbetaren producerar utöver sin egen lön – och som ägaren tillägnar sig. Det uppstår i produktionen, inte i cirkulationen.'},
+{q:'Vad menas med alienation hos Marx?', o:['Att arbetaren äger sina produktionsmedel','Att människan blir främmande inför sitt arbete, sina produkter och sig själv','Att samhället saknar normer','Att arbetaren får högre lön'], c:1, e:'Alienation uppstår när arbetet inte längre är ett uttryck för människan utan ett medel för överlevnad. Marx urskiljer fyra aspekter: alienation från produkten, arbetsprocessen, sig själv som artväsen och andra människor.'},
+{q:'Vad menar Marx med bas?', o:['Den ekonomiska strukturen – produktionsförhållandena','Politik och religion','Arbetarnas löner','Kulturella normer'], c:0, e:'Basen är den ekonomiska strukturen; överbyggnaden är politik, rätt, religion och kultur. Enligt Marx formas överbyggnaden av basen.'},
+{q:'Vem är bourgeoisin enligt Marx?', o:['Arbetarna som säljer sin arbetskraft','Ägarna av produktionsmedlen','Staten','Prästerskapet'], c:1, e:'Bourgeoisin (kapitalisterna) äger produktionsmedlen – fabriker, maskiner, mark. De kan därför bestämma över produktionen och tillägna sig mervärdet.'},
+{q:'Vad kallas Marx teori om att historien rör sig genom olika produktionssätt som drivs av materiella motsättningar?', o:['Historicism','Historisk materialism','Rationalism','Funktionalism'], c:1, e:'Historisk materialism (historiematerialism) är Marx term. Historicism är en bredare historiefilosofisk tradition – begreppen är närbesläktade men inte identiska.'}
+]},
+{id:'m8', level:'C', type:'skriv', title:'Bas och överbyggnad', question:'Förklara vad Marx menar med bas och överbyggnad och hur de hänger samman.', model:'Basen är den ekonomiska strukturen – produktionsförhållandena och produktionsmedlen. Det är samhällets "fundament". Överbyggnaden är politik, rätt, religion, kultur och ideologi – det som vilar på basen. Enligt Marx formas överbyggnaden av basen: de som äger produktionsmedlen har också makt att forma samhällets idéer och institutioner. Lagar skyddar till exempel äganderätten, och religionen kan legitimera rådande maktförhållanden. Därför är ekonomin avgörande för hur resten av samhället ser ut. Sambandet är dock inte mekaniskt – Marx menade inte att varje kulturell företeelse direkt kan härledas till ekonomin, utan att basen sätter ramarna för vad som är möjligt i överbyggnaden. En nyanserad tolkning betonar att förhållandet är dialektiskt: överbyggnaden kan också påverka basen.'},
+{id:'m9', level:'A', type:'fall', title:'Anna och Herr Bergström', context:'Herr Bergström äger skofabriken i Bergvik – byggnaden, maskinerna och marken. Anna har arbetat där i många år och syr skodelar. Hon ser aldrig de färdiga skorna och känner ingen stolthet över det hon skapar. Varje fredag får arbetarna en lön som precis täcker deras grundbehov, medan Herr Bergström blir rikare för varje år. Med tiden börjar arbetarna prata med varandra om sina arbetsvillkor och inser att deras problem är gemensamma, inte individuella.', question:'Analysera berättelsen utifrån minst fem marxistiska begrepp. Diskutera också en begränsning i analysen.', model:'Herr Bergström är kapitalist – han äger produktionsmedlen (fabriken, maskinerna, marken) och kan därför bestämma över produktionen och tillägna sig mervärdet. Anna är proletär – hon säljer sin arbetskraft för lön och äger inget produktionsmedel. Mervärde uppstår eftersom Anna producerar skor till ett värde högre än hennes lön; skillnaden tillägnar sig Herr Bergström. Alienation uppstår eftersom hon bara gör en liten del av produktionen och aldrig ser slutprodukten – arbetet blir ett medel för överlevnad, inte ett uttryck för henne som människa. När arbetarna börjar prata med varandra uppstår klassmedvetande: problemen ses inte längre som individuella utan som gemensamma. Detta kan leda till organisering (fackförening) och ytterst till förändring av maktbalansen. En begränsning i analysen är att Marx binära klassmodell inte fångar dagens komplexa arbetsmarknad – med tjänstesektor, medelklass och precariat. Men i berättelsens förenklade värld fungerar begreppen väl som analysverktyg, och de synliggör maktrelationer som annars lätt förblir osynliga.'},
+{id:'m10', level:'A', type:'kritik', title:'Kritik mot Marx', question:'Formulera två invändningar mot Marx teori och nyansera dem.', model:'Invändning 1: Förutsägelserna slog inte in – den kommunistiska revolutionen uteblev i Västeuropa, och kapitalismen visade sig mer anpassningsbar än Marx förutsåg. Välfärdsstaten och fackföreningarna reformerade kapitalismen utan revolution, och arbetarklassens levnadsvillkor förbättrades gradvis. Invändning 2: Teorin är ekonomiskt reduktionistisk – den reducerar historiska förlopp till i första hand ekonomi och bortser från genus, etnicitet, religion och politik. Webers analys av rationaliseringens framväxt visar att kulturella och religiösa faktorer har egen kraft. Nyansering: Marx analytiska kärna – makt och exploatering i arbetslivet – är fortfarande användbar för att förstå globala produktionskedjor, gigekonomi och ojämlikhet. Alienationsteorin kan tillämpas på monotona eller kontrollerade arbeten. En nyanserad slutsats är att skilja mellan den analytiska kärnan (fortfarande relevant) och de historiska prognoserna (inte relevanta). Marx behöver uppdateras, inte avfärdas.'}
+]},
+
+{id:'weber', title:'Max Weber', subtitle:'Verstehen och rationalisering', steps:[
+{id:'w1', level:'E', type:'lektion', title:'Webers grundbegrepp', content:`
+<p>Max Weber (1864–1920) är en av sociologins mest inflytelserika tänkare. Till skillnad från Durkheim menade Weber att samhället <em>inte</em> kan studeras med naturvetenskapliga metoder – eftersom människor handlar utifrån subjektiva motiv och tolkningar.</p>
+<div class="callout"><strong>Webers motto:</strong> "Naturen förklarar vi, människan förstår vi." Naturen kan förklaras genom kausala lagar, men människan måste <em>förstås</em> genom att vi tolkar hennes handlingar utifrån den mening hon själv ger dem.</div>
+<h4>Centrala begrepp</h4>
+<ul>
+<li><strong>Verstehen</strong> – att försöka förstå en handling utifrån den mening individen själv ger den. Detta är Webers metod – till skillnad från Durkheims objektiva positivism.</li>
+<li><strong>Värdeneutralitet</strong> – vetenskapens ideal att inte låta personliga värderingar styra forskningen. Forskaren ska beskriva och förklara, inte döma.</li>
+<li><strong>Idealtyp</strong> – en analytisk tankebild eller grovhuggen generalisering som används som jämförelseinstrument. Den är inte en beskrivning av verkligheten utan ett verktyg för att förstå den.</li>
+<li><strong>Rationalisering</strong> – processen där handlingar alltmer styrs av förnuft och beräkning (målrationalitet) i stället för tradition och känslor.</li>
+<li><strong>Byråkrati</strong> – rationaliseringens organisatoriska form: hierarki, regler, meritokrati.</li>
+<li><strong>Sekularisering</strong> – processen där religionens inflytande minskar och vetenskapliga förklaringar tar över.</li>
+<li><strong>Järnburen</strong> – Webers metafor för det rationella samhällets frihetshot. Ett system som är effektivt men som hotar människans frihet och meningsskapande.</li>
+</ul>`},
+{id:'w2', level:'E', type:'lektion', title:'Fyra handlingstyper', content:`
+<p>Weber identifierade fyra typer av socialt handlande – det vill säga handlingar som är riktade mot andra människor och som styrs av den mening aktören ger dem.</p>
+<table>
+<tr><th>Typ</th><th>Kännetecken</th><th>Exempel</th></tr>
+<tr><td>Traditionellt</td><td>Handlingar som styrs av vanor och tradition</td><td>Man firar en högtid för att familjen alltid har gjort det</td></tr>
+<tr><td>Affektuellt</td><td>Handlingar som styrs av känslor och affektioner</td><td>Man skriker av ilska under ett bråk</td></tr>
+<tr><td>Värderationellt</td><td>Handlingar som styrs av en medveten övertygelse om vad som är rätt – oavsett konsekvenser</td><td>Man vägrar ljuga för att man anser att det alltid är fel</td></tr>
+<tr><td>Målrationellt</td><td>Handlingar som styrs av ett medvetet mål och beräkning av vilka medel som bäst leder dit</td><td>Man pluggar för att få högsta möjliga betyg</td></tr>
+</table>
+<h4>Varför är handlingstyperna viktiga?</h4>
+<p>Weber menade att det moderna samhället präglas av att <strong>målrationellt handlande tränger undan de andra typerna</strong>. I det moderna samhället måste vi ständigt beräkna vilka medel som bäst leder till våra mål – i arbetslivet, i byråkratin, i ekonomin. Detta är en del av rationaliseringsprocessen.</p>
+<div class="callout-warn"><strong>Vanlig missuppfattning:</strong> Att de fyra typerna skulle vara helt åtskilda. I praktiken är en handling ofta en blandning – men Webers typologi är ett <em>analytiskt</em> verktyg för att förstå vilken typ av motivation som dominerar i en given handling.</div>`},
+{id:'w3', level:'E', type:'lektion', title:'Byråkratins tio kännetecken', content:`
+<p>Weber beskrev byråkratin som den rationella organisationens <strong>idealtyp</strong>. Han identifierade tio kännetecken som definierar en byråkrati i dess renodlade form:</p>
+<ol>
+<li><strong>Personlig frihet och endast formella förpliktelser</strong> – byråkraten är personligen fri men lyder under de förpliktelser som befattningen föreskriver.</li>
+<li><strong>Hierarki</strong> – tjänsterna är inplacerade i en tydlig hierarki med över- och underordning.</li>
+<li><strong>Klart angivna funktioner</strong> – varje befattning har tydligt definierade uppgifter och ansvarsområden.</li>
+<li><strong>Kontrakt</strong> – tjänstemännen tillsätts på grundval av ett formellt kontrakt, inte genom arv eller personliga band.</li>
+<li><strong>Urval efter kvalifikationer</strong> – tjänstemännen väljs ut efter professionella kvalifikationer (t.ex. examina), inte efter personliga relationer.</li>
+<li><strong>Penninglön efter position</strong> – lönen är fastställd efter positionen i hierarkin, inte förhandlad från fall till fall.</li>
+<li><strong>Huvudsaklig sysselsättning</strong> – tjänsten är tjänstemannens huvudsakliga sysselsättning, inte ett bisyssla.</li>
+<li><strong>Karriärvägar</strong> – det finns bestämda karriärvägar där befordran sker efter meriter, tjänsteår eller överordnades bedömningar.</li>
+<li><strong>Äger inte befattningen</strong> – tjänstemannen äger varken sin befattning eller de resurser som följer med den.</li>
+<li><strong>Enhetligt kontroll- och disciplinsystem</strong> – byråkraten är underkastad ett enhetligt system av kontroll och disciplin.</li>
+</ol>
+<div class="callout"><strong>Varför är byråkratin viktig för Weber?</strong> Byråkratin är det mest renodlade exemplet på rationaliseringens organisatoriska form. Den är effektiv och förutsägbar – men samtidigt opersonlig och kan hota människans frihet. Detta är kärnan i Webers ambivalens gentemot det moderna samhället: rationaliseringen frigör oss från traditionen men fångar oss i järnburen.</div>`},
+{id:'w4', level:'C', type:'lektion', title:'Rationaliseringskedjan', content:`
+<p>Webers mest kända analys är hans teori om <strong>rationaliseringen</strong> – den process där handlingar i det moderna samhället alltmer styrs av förnuft och beräkning istället för tradition och känslor. Denna process är sammanvävd med två andra processer: byråkratisering och sekularisering.</p>
+<h4>Kedjan: rationalisering → byråkratisering → sekularisering</h4>
+<p><strong>Rationalisering</strong> är den övergripande processen: målrationellt handlande tränger undan traditionellt och värderationellt handlande. Detta sker på alla områden – ekonomi, politik, vetenskap, vardagsliv.</p>
+<p><strong>Byråkratisering</strong> är rationaliseringens <em>organisatoriska</em> konsekvens. När samhället rationaliseras organiseras det i allt större och mer komplexa byråkratier: hierarkier, klart angivna funktioner, meritokratiska urvalsprinciper, enhetliga kontrollsystem.</p>
+<p><strong>Sekularisering</strong> är rationaliseringens <em>kulturella</em> konsekvens. När rationaliseringen "avförtrollar" världen förlorar religionen sin legitimitet. Vetenskapliga förklaringar tar över där religionen tidigare gav mening. Konst och kultur blir nya arenor för meningsskapande – men på ett mer fragmentiserat sätt än religionen.</p>
+<h4>Resultatet: Järnburen</h4>
+<p>Resultatet av denna kedja är vad Weber kallar <strong>järnburen</strong> – ett system som är effektivt men som hotar människans frihet och meningsskapande. Weber uttryckte det som att människan blir en "specialist utan ande, njutningsmänniska utan hjärta".</p>
+<div class="callout"><strong>Nyansering:</strong> Weber menade inte att järnburen är oundviklig eller att rationaliseringen bara är negativ. Han erkände att rationaliseringen har frigörande effekter – den befriar oss från traditionens bojor och möjliggör vetenskapliga framsteg. Men han oroade sig för att priset blir för högt: att människan förlorar meningen med tillvaron när allt reduceras till effektivitet och beräkning.</div>`},
+{id:'w5', level:'C', type:'lektion', title:'Idealtypen som verktyg', content:`
+<p><strong>Idealtypen</strong> är ett av Webers mest använda begrepp – och ett av de mest missförstådda.</p>
+<h4>Vad är en idealtyp?</h4>
+<p>En idealtyp är <em>inte</em> ett ideal i betydelsen "något eftersträvansvärt". Det är en <strong>analytisk konstruktion</strong> – en överdriven, renodlad bild av ett fenomen som används för att jämföra med empiriska fall. Weber kallade det en "tankebild" som aldrig existerar i ren form i verkligheten.</p>
+<h4>Varför används idealtyper?</h4>
+<p>Syftet är att göra det möjligt att säga <em>hur långt</em> ett verkligt fenomen avviker från idealtypen – och därmed förstå fenomenet bättre. Idealtypen är ett jämförelseinstrument, inte en beskrivning. Genom att jämföra ett verkligt fenomen med en idealtyp kan man identifiera vad som är specifikt och vad som avviker.</p>
+<h4>Exempel: Byråkratin som idealtyp</h4>
+<p>Webers tio kännetecken för byråkratin är en idealtyp. Ingen verklig byråkrati uppfyller alla tio kännetecken perfekt – men genom att jämföra en verklig organisation med idealtypen kan man förstå vad som gör den mer eller mindre byråkratisk.</p>
+<h4>Exempel: Perfekt gymnasieelev</h4>
+<p>Tänk dig en idealtyp för en "perfekt gymnasieelev": en elev som pluggar optimalt, interagerar respektfullt, presterar på topp och aldrig missar en deadline. Ingen verklig elev är sådan – men idealtypen gör det möjligt att jämföra och förstå vad som skiljer verkliga elever från idealbilden.</p>
+<div class="callout-warn"><strong>Vanlig missuppfattning:</strong> Att idealtypen är en beskrivning av verkligheten. Den är i stället ett <em>jämförelseinstrument</em> – en "tankebild" som aldrig existerar i ren form. Att anklaga Weber för att hans idealtyper inte stämmer med verkligheten är att missförstå vad de är till för.</div>`},
+{id:'w6', level:'A', type:'lektion', title:'Nyansering & kritik', content:`
+<p>Weber har kritiserats från flera håll – och från <em>motsatta</em> positioner.</p>
+<h4>Värdeneutralitet i praktiken</h4>
+<p>Carl Friedrich (1940) pekade på att Webers idealtypsanalys i praktiken ledde honom att införa värdeomdömen i diskussionen om byråkrati. Värdeneutralitetsidealet är lätt att formulera men svårt att upprätthålla. Forskaren gör alltid val – vad som studeras, vilka idealtyper som används, vilka begrepp som definieras – och dessa val påverkas av värderingar.</p>
+<h4>Verstehen som intuitionism</h4>
+<p>Webers Verstehen-begrepp har kritiserats för att vara intuitionistiskt – att det liknar mer en konstnärlig tolkning än en vetenskaplig metod. Hur kan man veta att man har "förstått" en handling korrekt? Var går gränsen mellan tolkning och gissning? Kritikerna menar att Verstehen riskerar att bli subjektivt godtycke om det inte kombineras med empiriska metoder (intervjuer, observationer, dokument).</p>
+<h4>Rationalitetsbegreppet – Habermas kritik</h4>
+<p>Jürgen Habermas (1984) menar att Weber orienterar sitt rationalitetsbegrepp alltför starkt mot mål–medel-relationen. Weber definierar rationalitet som förmågan att välja de bästa medlen för att uppnå ett givet mål – men han förbiser en annan form av rationalitet: <strong>kommunikativ rationalitet</strong>, som uppstår i ömsesidig förståelse mellan människor. Enligt Habermas är järnburen inte oundviklig – kommunikativ rationalitet kan vara en motkraft mot den instrumentella rationaliteten.</p>
+<h4>Hur ska man förhålla sig till kritiken?</h4>
+<p>Webers styrka är att han tar individens subjektiva mening på allvar och synliggör rationaliseringens konsekvenser. Hans svaghet är att värdeneutralitetsidealet är svårt att upprätthålla i praktiken och att Verstehen riskerar att bli subjektivt godtycke. En A-nivåanalys använder Webers begrepp medvetet – som analytiska verktyg, inte som absoluta sanningar.</p>
+<p class="footnote">Källor: Friedrich, C.J. (1940), "Some Observations on Weber's Analysis of Bureaucracy", i Merton et al. (red.), Reader in Bureaucracy. Free Press. Habermas, J. (1984), The Theory of Communicative Action, vol. 1. Beacon Press.</p>`},
+{id:'w7', level:'E', type:'quiz', title:'Quiz – Weber', questions:[
+{q:'Vad är en idealtyp enligt Weber?', o:['Ett eftersträvansvärt ideal','En analytisk tankebild som används som jämförelseinstrument','En beskrivning av en verklig person','En statistisk metod'], c:1, e:'Idealtypen är en renodlad analytisk konstruktion – inte ett ideal att sträva efter, utan ett mått att jämföra empiriska fall med.'},
+{q:'Vilken handlingstyp är målrationell?', o:['Att fira en högtid för att familjen alltid gjort det','Att skrika av ilska','Att vägra ljuga för att det alltid är fel','Att plugga för att få högsta möjliga betyg'], c:3, e:'Målrationellt handlande styrs av ett medvetet mål och beräkning av vilka medel som bäst leder dit.'},
+{q:'Vad menar Weber med Verstehen?', o:['Att mäta sociala fakta objektivt','Att förstå en handling utifrån den mening individen själv ger den','Att beskriva byråkratins struktur','Att studera samhället som naturvetenskap'], c:1, e:'Verstehen innebär att försöka förstå handlingen utifrån individens eget perspektiv – till skillnad från Durkheims objektiva positivism.'},
+{q:'Vad menas med järnburen?', o:['En fysisk bur i fabriker','Metaforen för det rationella samhällets frihetshot','En byråkratisk hierarki','En religiös symbol'], c:1, e:'Järnburen beskriver hur rationalisering, byråkrati och sekularisering skapar ett effektivt men frihetshotande system – människan blir "specialist utan ande".'},
+{q:'Vilken handlingstyp är värderationell?', o:['Att följa en invand tradition','Att handla utifrån känslor','Att handla utifrån en medveten övertygelse oavsett konsekvenser','Att beräkna medel för att nå ett mål'], c:2, e:'Värderationellt handlande styrs av övertygelser och värderingar, oavsett konsekvenserna – man gör det man anser är rätt även om det får negativa konsekvenser.'}
+]},
+{id:'w8', level:'C', type:'skriv', title:'Verstehen', question:'Förklara vad Weber menar med Verstehen och varför det är centralt i hans sociologi.', model:'Verstehen innebär att försöka förstå en social handling utifrån den mening individen själv ger den. Det är centralt eftersom Weber menar att människor handlar utifrån subjektiva motiv och tolkningar – till skillnad från naturen som kan förklaras kausalt. Naturen kan vi förklara genom lagar, men människan måste vi förstå genom att tolka hennes handlingar utifrån hennes eget perspektiv. Samhällsvetenskapen måste därför vara förstående, inte bara förklarande. Verstehen gör det möjligt att komma åt den subjektiva dimensionen av socialt liv – varför människor handlar som de gör, inte bara att de gör det.'},
+{id:'w9', level:'A', type:'skriv', title:'Rationalisering → byråkrati → sekularisering', question:'Förklara sambandet mellan rationalisering, byråkratisering och sekularisering hos Weber, och diskutera en kritik mot hans diagnos.', model:'Rationalisering innebär att målrationellt handlande tränger undan traditionellt och värderationellt handlande – handlingar styrs alltmer av förnuft och beräkning istället för tradition och känsla. Byråkratiseringen är den organisatoriska konsekvensen: samhället organiseras i hierarkier med klart angivna funktioner och meritokratiska principer. Sekulariseringen är den kulturella konsekvensen: när rationaliseringen "avförtrollar" världen förlorar religionen sin legitimitet och vetenskapen blir dominerande förklaringsmodell. Resultatet är järnburen – ett effektivt men frihetshotande system där människan blir "specialist utan ande". Habermas kritiserar Weber för att rationalitetsbegreppet är alltför inriktat på mål–medel-relationen; han menar att det också finns en kommunikativ rationalitet som uppstår i ömsesidig förståelse, och att järnburen därför inte är oundviklig. Kommunikativ rationalitet kan vara en motkraft mot den instrumentella rationaliteten.'}
+]},
+
+{id:'simmel', title:'Simmel & jämförelser', subtitle:'Växelverkan och klassikerna', steps:[
+{id:'s1', level:'E', type:'lektion', title:'Simmels grundbegrepp', content:`
+<p>Georg Simmel (1858–1918) är en av sociologins mindre kända men mycket inflytelserika klassiker. Hans sociologi skiljer sig från de andra genom att den är <strong>formell</strong> – sociologins uppgift är att studera <em>sociala former</em>, det vill säga återkommande mönster i umgänget mellan människor.</p>
+<h4>Centrala begrepp</h4>
+<ul>
+<li><strong>Växelverkan</strong> (tyska <em>Wechselwirkung</em>) – samhället uppstår genom ömsesidig påverkan mellan individer. Samhället är inte en sak som existerar oberoende av människorna – det är en pågående process där individer genom sina handlingar ständigt skapar och omskapar det vi kallar "samhället".</li>
+<li><strong>Församhälleligande</strong> (tyska <em>Vergesellschaftung</em>) – de former genom vilka individer ingår i ömsesidiga relationer och bildar samhälleliga enheter. Individen blir till som social varelse genom att ingå i relationer med andra – människan blir människa genom samhället.</li>
+<li><strong>Differentiering</strong> – den process där samhället delas upp i allt fler specialiserade sfärer (arbete, fritid, religion, politik, familj). Det moderna samhället är mer differentierat än det traditionella – vi har fler roller, fler yrken, fler sociala sammanhang.</li>
+<li><strong>Blasé-attityd</strong> – en avtrubbad, distanserad hållning till omvärlden som uppstår till följd av överstimulering. I storstaden utsätts människan för ett överflöd av intryck och nervstimuli, vilket leder till en psykologisk försvarsmekanism: man slutar reagera känslomässigt på allt.</li>
+</ul>
+<div class="callout"><strong>Simmels centrala insikt:</strong> Samhälle och individ är ömsesidigt beroende – det ena kan inte förstås utan det andra. Individen formas av samhället, men samhället existerar bara genom individernas handlingar. Detta är en mer nyanserad hållning än både Durkheims strukturalism och Webers individualism.</div>`},
+{id:'s2', level:'E', type:'lektion', title:'Storstad vs landsbygd', content:`
+<p>Simmel analyserade skillnaden mellan livet i storstaden och livet på landsbygden – en analys som fortfarande är relevant för att förstå urbaniseringens konsekvenser.</p>
+<h4>Storstadens människa</h4>
+<p>Storstadsmänniskan utsätts för ett <strong>överflöd av nervstimuli</strong>: ljud, ljus, rörelse, människor, reklam, intryck. För att skydda sig mot överstimulering utvecklar hon en <strong>blasé-attityd</strong> – en avtrubbad, distanserad och intellektualiserad hållning. Hon reagerar inte längre känslomässigt på allt som händer omkring henne – hon har lärt sig att filtrera bort det mesta.</p>
+<p>Blasé-attityden är inte ett personlighetsdrag utan en <em>psykologisk försvarsmekanism</em> som uppstår ur den sociala miljön. Den hänger också samman med penningekonomins rationalisering: i storstaden behandlas människor och ting som utbytbara storheter. Allt har ett pris, allt kan köpas och säljas – vilket förstärker distansen mellan människor.</p>
+<h4>Landsbygden</h4>
+<p>På landsbygden är människan mer känslostyrd men också mer bunden av tradition och kollektiv kontroll. Relationerna är varmare men också mer övervakade – alla känner alla, och avvikelse bestraffas hårdare. Det finns en trygghet i gemenskapen men också en begränsning av friheten.</p>
+<div class="callout"><strong>Simmels ambivalens:</strong> Simmel menade inte att storstaden är "sämre" eller att landsbygden är "bättre". Han såg både förlusten av känslomässig närhet och den ökade individuella friheten som differentieringen möjliggör. I storstaden blir människan friare att forma sitt eget liv – men till priset av anonymitet och distans.</div>`},
+{id:'s3', level:'C', type:'lektion', title:'Ambivalens och jämförelse', content:`
+<p>Simmels analys av storstaden är <strong>inte ett fördömande</strong> – det är en ambivalent diagnos. Han ser både förluster och vinster med det moderna samhället, och detta skiljer honom från både Durkheims funktionalistiska harmoni och Marx konfliktteoretiska kritik.</p>
+<h4>Ambivalensen</h4>
+<p>Å ena sidan förlorar storstadsmänniskan känslomässig närhet – blasé-attityden gör henne distanserad och likgiltig. Å andra sidan vinner hon individuell frihet – hon är inte längre bunden av tradition, kollektiv kontroll och ständig övervakning. Hon kan forma sitt eget liv på ett sätt som landsbygdens människa inte kan.</p>
+<h4>Klassikerna i jämförelse</h4>
+<table>
+<tr><th>Teoretiker</th><th>Fokus</th><th>Nivå</th><th>Nyckelbegrepp</th></tr>
+<tr><td>Marx</td><td>Ekonomi, klasskonflikt, kapitalism</td><td>Makro</td><td>Mervärde, alienation, klasskamp</td></tr>
+<tr><td>Durkheim</td><td>Sociala fakta, integration, ordning</td><td>Makro</td><td>Anomi, sociala fakta, självmordstyper</td></tr>
+<tr><td>Weber</td><td>Individens handlingar, motiv, tolkningar</td><td>Mikro/makro</td><td>Verstehen, idealtyp, rationalisering</td></tr>
+<tr><td>Simmel</td><td>Sociala relationer och växelverkan</td><td>Mikro</td><td>Växelverkan, differentiering, blasé</td></tr>
+</table>
+<p class="footnote">Weber är mikroteoretiker i sin förståelse av individens handlingar men makroteoretiker i sin analys av rationaliseringens samhälleliga konsekvenser. Klassikerna rör sig ofta mellan nivåerna – tabellen är en förenkling.</p>
+<p><strong>Sammanfattning:</strong> Marx betonar <em>konflikt</em>, Durkheim <em>integration och funktion</em>, Weber <em>subjektiv mening och rationalisering</em>, Simmel <em>växelverkan och sociala former</em>. Dessa olika fokus kompletterar varandra – ingen enskild teori ger en heltäckande bild.</p>`},
+{id:'s4', level:'A', type:'lektion', title:'Kritik och metakritik', content:`
+<h4>Kritik mot Simmel</h4>
+<ul>
+<li><strong>Formalism</strong> – Simmels sociologi är alltför formalistisk: genom att fokusera på sociala <em>former</em> riskerar han att bortse från det historiska och materiella innehållet i sociala relationer. Formerna kan bli tomma abstraktioner om de inte kopplas till historiska och materiella sammanhang.</li>
+<li><strong>Impressionism</strong> – Simmels analys av storstaden är impressionistisk snarare än systematiskt empirisk. Hans begrepp (som blasé-attityden) är suggestiva men svåra att operationalisera för empirisk forskning. De beskriver snarare än förklarar.</li>
+<li><strong>Sorokins kritik</strong> – Pitirim Sorokin riktade enligt kritiken "skoningslös kritik" mot Simmels formbegrepp. En del av Sorokins invändningar har diskuterats kritiskt i senare Simmel-forskning – det finns argument för att Sorokin missförstod Simmels användning av "form" som en provisorisk analytisk analogi. Kritiken mot den empiriska prövbarheten kvarstår dock som giltig.</li>
+</ul>
+<div class="callout"><strong>Lärdom:</strong> En del av kritiken mot Simmel kan vila på feltolkning, medan annan kritik – att hans analyser är svåra att pröva empiriskt – kvarstår. Detta illustrerar en viktig poäng: källkritik är avgörande även i teorikritik – inte alla invändningar har samma tyngd.</div>
+<h4>Metakritik mot hela jämförelsen</h4>
+<p>En viktig metakritik mot hela jämförelsen av klassikerna är att de skrev i en specifik historisk kontext – industrialiseringens genombrott – och att deras teorier därför inte utan vidare kan tillämpas på dagens samhälle:</p>
+<ul>
+<li>Marx klassbegrepp förutsätter en fabrikskapitalism som inte längre är dominerande.</li>
+<li>Durkheims självmordsstatistik bygger huvudsakligen på 1800-talets data (<em>Le Suicide</em>, 1897).</li>
+<li>Webers byråkratibegrepp utvecklades före informationsteknologins genombrott.</li>
+<li>Simmels storstadsanalys är från sekelskiftet 1900.</li>
+</ul>
+<p>Detta innebär inte att teorierna är värdelösa – men de måste <em>anpassas</em> och <em>kombineras</em> med nutida forskning för att förklara nutida fenomen. För A-nivå är det en styrka att kunna resonera om denna begränsning utan att avfärda teorierna.</p>`},
+{id:'s5', level:'E', type:'quiz', title:'Quiz – Simmel', questions:[
+{q:'Vad menar Simmel med växelverkan?', o:['Att samhället uppstår genom ömsesidig påverkan mellan individer','Att individen är helt determinerad av strukturen','Att ekonomin styr samhället','Att religionen minskar i betydelse'], c:0, e:'Växelverkan (Wechselwirkung) är Simmels nyckelbegrepp: samhället uppstår i den ömsesidiga påverkan mellan individer – det är ingen fristående "struktur" som existerar oberoende av handlingarna.'},
+{q:'Vad kännetecknar blasé-attityden?', o:['En känslosam och engagerad hållning','En avtrubbad, distanserad hållning som följd av överstimulering','En religiös övertygelse','En traditionell livsstil på landsbygden'], c:1, e:'Blasé-attityden uppstår som en psykologisk försvarsmekanism mot storstadens överflöd av nervstimuli – människan slutar reagera känslomässigt på allt som händer.'},
+{q:'Vad menar Simmel med differentiering?', o:['Att samhället blir mer enhetligt','Att arbetsliv, roller och sociala sfärer delas upp allt mer','Att religionen tar över samhället','Att klasskampen intensifieras'], c:1, e:'Differentiering är den process där samhället delas upp i allt fler specialiserade sfärer och roller – det moderna samhället är mer differentierat än det traditionella.'},
+{q:'Vilken teoretiker är mikroteoretiker och betonar individens subjektiva mening?', o:['Marx','Durkheim','Weber','Comte'], c:2, e:'Weber utgår från individens handlingar och subjektiva tolkningar – han är mikroteoretiker i sin handlingsteori, men rör sig även på makronivå i sin rationaliseringsanalys.'},
+{q:'Vad menas med församhälleligande hos Simmel?', o:['Att samhället upplöses','Att individen blir till genom att ingå i sociala relationer','Att staten tar över','Att ekonomin rationaliseras'], c:1, e:'Församhälleligande (Vergesellschaftung) är processen där individen blir till som social varelse genom att ingå i ömsesidiga relationer med andra.'}
+]},
+{id:'s6', level:'C', type:'skriv', title:'Weber vs Durkheim om metod', question:'Jämför Webers och Durkheims syn på hur samhället ska studeras.', model:'Durkheim är positivist och menar att samhället kan studeras med naturvetenskapliga metoder – sociala fakta kan behandlas som objekt och studeras genom statistik och jämförelser. Weber menar att samhället inte kan studeras objektivt eftersom människor handlar utifrån subjektiva motiv och tolkningar. Därför behöver samhällsvetenskapen en förståelsemetod (Verstehen) – forskaren måste försöka förstå handlingen utifrån individens eget perspektiv. Skillnaden speglar en djupare motsättning om vetenskapens möjligheter: kan samhället studeras som naturen, eller kräver det en helt annan metod? Båda har giltiga poänger – Durkheim visar att sociala mönster existerar oberoende av individuella tolkningar, Weber visar att dessa mönster skapas genom meningsfulla handlingar som måste förstås.'},
+{id:'s7', level:'A', type:'skriv', title:'Simmel på sociala medier', question:'Diskutera hur Simmels begrepp växelverkan och differentiering kan användas för att förstå sociala medier idag.', model:'Simmels växelverkan – att samhället uppstår i ömsesidig påverkan mellan individer – kan användas för att förstå sociala medier som en arena där identiteter och normer ständigt förhandlas. På sociala medier uppstår nya sociala former (influencers, memes, kommentarsfält) genom individernas ömsesidiga påverkan. Differentieringen – uppdelningen i allt fler sfärer – syns i hur sociala medier skapar separata arenor för arbete, privatliv, konsumtion och identitet. Samma person kan ha olika konton för olika syften, och gränsen mellan privat och offentligt suddas ut. Blasé-attityden kan jämföras med den avtrubbning som uppstår vid överflöd av intryck i flödet – vi scrollar förbi utan att reagera. En begränsning är att Simmel inte kunde förutse digitala mediers infrastruktur – hans begrepp måste anpassas och kombineras med nutida medie- och kommunikationsforskning för att bli fullständiga.'}
+]},
+
+{id:'jam', title:'Jämförelser & syntes', subtitle:'Kombinera perspektiven', steps:[
+{id:'j1', level:'C', type:'skriv', title:'Marx vs Durkheim', question:'Jämför Marx och Durkheims syn på vad som förklarar samhället.', model:'Marx menar att produktionsförhållandena är avgörande – ekonomin är basen som formar överbyggnaden (politik, religion, kultur). Samhället förklaras ytterst genom att analysera vem som äger produktionsmedlen och vilka maktrelationer som följer av detta. Durkheim menar att sociala fakta – normer, värderingar och kollektiva föreställningar – är avgörande. Samhället förklaras genom att analysera graden av integration och reglering. Båda är makroteoretiker, men Marx betonar materiella/ekonomiska faktorer medan Durkheim betonar kulturella/sociala faktorer. Marx ser konflikt som drivkraft; Durkheim ser integration som grund för samhällets stabilitet.'},
+{id:'j2', level:'C', type:'skriv', title:'Mikro- vs makroteorier', question:'Vad kännetecknar mikroteorier respektive makroteorier?', model:'Mikroteorier utgår från enskilda individers perspektiv och upplevelse av sociala förhållanden – de tar utgångspunkt i det lilla och har ofta ett aktörsperspektiv (människan ses som fritt handlande). Makroteorier utgår från samhället som ett övergripande system – de tar utgångspunkt i det stora och har ofta ett strukturperspektiv (de betonar de möjligheter och begränsningar som regler och mönster i samhället innebär). Weber och Simmel är mikroteoretiker; Marx och Durkheim är makroteoretiker. Men gränserna är inte absoluta – Weber rör sig mellan nivåerna i sin rationaliseringsanalys, och Marx alienationsteori är djupt individcentrerad.'},
+{id:'j3', level:'A', type:'skriv', title:'Alla fyra om aktör–struktur', question:'Jämför klassikerna Marx, Durkheim, Weber och Simmel utifrån aktör–struktur. Diskutera också en begränsning med att jämföra dem.', model:'Marx och Durkheim är makroteoretiker: Marx förklarar samhället utifrån produktionsförhållanden och klasstillhörighet, Durkheim utifrån sociala fakta och integration. Individen formas av strukturen men har begränsat utrymme för egen agens (hos Durkheim mer begränsat än hos Marx). Weber och Simmel är mikroteoretiker: Weber utgår från individens subjektiva handlingar och meningsskapande, Simmel från växelverkan mellan individer. Men skillnaderna är inte absoluta – Marx alienationsteori är individcentrerad, Webers rationaliseringsteori beskriver en samhällelig process. En begränsning med jämförelsen är att klassikerna skrev i en specifik historisk kontext (1800-talets industrialisering) och att deras begrepp inte utan vidare kan tillämpas på dagens samhälle. En nyanserad analys håller både likheterna och den historiska begränsningen levande – den väljer inte sida utan visar hur perspektiven kompletterar varandra.'},
+{id:'j4', level:'A', type:'fall', title:'Segregation i en stad', context:'I en svensk stad är boendesegregationen tydlig – vissa områden har hög inkomst och hög utbildningsnivå, andra områden har låg inkomst och hög arbetslöshet. Skolorna speglar samma mönster. Invånarna i de olika områdena möts sällan i vardagen.', question:'Analysera segregationen utifrån minst tre klassiker. Diskutera också en begränsning i analysen.', model:'Marx: Boendesegregation speglar klasstillhörighet och ägandeförhållanden – de med kapital har råd att bo i attraktiva områden. Segregationen är en rumslig manifestation av klasskillnader. Durkheim: Segregerade områden har svag social integration mellan grupper – risk för anomi när invånarna inte delar gemensamma normer. Skolorna kan bli arenor där anomi uppstår. Weber: Individer upplever olika livschanser baserat på var de bor; segregationen upprätthålls genom subjektiva tolkningar och handlingar. Byråkratiska strukturer (bostadsköer, skolval) förstärker mönstren. Simmel: Sociala gränser upprätthålls i vardagliga interaktioner – blasé-attityden kan göra att man inte ser segregationen, och differentieringen skapar separata sociala sfärer. Begränsning: Klassikerna utvecklades före modern välfärdsstat, migrationsmönster och bostadspolitik – analysen måste kompletteras med nutida forskning om strukturell diskriminering, bostadsmarknad och skolsegregation.'},
+{id:'j5', level:'A', type:'fall', title:'Ungas psykiska ohälsa', context:'Psykisk ohälsa bland unga har ökat de senaste decennierna. Sociala medier, pandemin och ökade prestationskrav har pekats ut som möjliga orsaker.', question:'Analysera fenomenet utifrån minst två klassiker och diskutera begränsningen.', model:'Durkheim: Anomi – snabba samhällsförändringar (sociala medier, pandemi) försvagar gamla normer och skapar meningslöshet. Unga möter otydliga sociala spelregler på sociala medier och i skolan. Marx: Alienation – unga möter ett arbetsliv präglat av prestationskrav och bristande kontroll; arbetet blir ett medel för överlevnad snarare än ett uttryck för individen. Skolan kan upplevas som alienerande om eleverna inte ser meningen med det de lär sig. Begränsning: Båda teorierna utvecklades i en annan historisk kontext; de måste anpassas för att förklara digitala samhällen. De fångar inte heller biologiska eller psykologiska faktorer som spelar roll för psykisk ohälsa. En nyanserad analys kombinerar klassikerna med nutida forskning om psykisk ohälsa och diskuterar teoriernas räckvidd och begränsningar.'},
+{id:'j6', level:'A', type:'fall', title:'Klimatkrisen', context:'Klimatkrisen är en global utmaning som kräver stora samhällsförändringar. Men beteenden förändras långsamt trots kunskap om hotet.', question:'Analysera klimatkrisen som sociologiskt fenomen utifrån minst två klassiker.', model:'Marx: Klimatkrisen kan förstås som en konsekvens av kapitalismens tillväxtlogik – produktionen drivs av vinstmaximering, inte hållbarhet. Alienation gör att människor inte ser sambandet mellan sin konsumtion och dess konsekvenser – produktionen är abstrakt och avlägsen. Weber: Rationaliseringen har skapat ett system där effektivitet prioriteras över värden. Järnburen gör det svårt att tänka utanför det rationella systemet – vi är fångade i ett system som belönar konsumtion och tillväxt, även när vi vet att det är ohållbart. Begränsning: Teorierna är från 1800-talet och fångar inte globala miljöfrågor direkt – de måste anpassas. En nyanserad analys kombinerar klassikerna med nutida miljösociologi, som analyserar konsumtionsmönster, politisk ekonomi och kollektivt handlande.'},
+{id:'j7', level:'A', type:'skriv', title:'Durkheim vs Weber om sociologins uppgift', question:'Jämför Durkheims och Webers syn på vad sociologin kan och bör göra. Diskutera styrkor och svagheter i båda positionerna.', model:'Durkheim menar att sociologin kan studera samhället objektivt, som naturvetenskapen studerar naturen. Sociala fakta kan behandlas som "ting" och statistik kan avslöja sociala mönster. Styrkan är att han visar att individuella handlingar har sociala orsaker – självmord är inte bara en psykologisk fråga utan en social. Svagheten är att han inte kan komma åt den subjektiva mening som driver individen (Douglas 1967). Weber menar att sociologin måste förstå subjektiv mening genom Verstehen. Styrkan är att han tar individens perspektiv på allvar och visar att socialt liv är meningsfullt. Svagheten är att Verstehen riskerar att bli intuitionistiskt och att värdeneutralitetsidealet är svårt att upprätthålla. En nyanserad slutsats är att båda positionerna har giltiga poänger – en fullständig sociologi behöver både förklaring och förståelse. Durkheim visar att det finns sociala mönster; Weber visar att dessa mönster skapas genom meningsfulla handlingar.'},
+{id:'j8', level:'A', type:'kritik', title:'Begränsningar med jämförelsen', question:'Diskutera en begränsning med att jämföra klassikerna och hur man kan hantera den.', model:'Begränsning: Klassikerna skrev i industrialiseringens genombrott (1800-tal). Deras begrepp förutsätter en specifik historisk kontext – Marx klassbegrepp en fabrikskapitalism som inte längre är dominerande, Durkheims självmordsstatistik från 1800-talet, Webers byråkratibegrepp före informationsteknologin, Simmels storstadsanalys från sekelskiftet 1900. Hantering: Teorierna måste anpassas och kombineras med nutida forskning. De är fortfarande användbara som analytiska verktyg, men inte som heltäckande sanningar. En A-nivåanalys håller både likheterna och den historiska begränsningen levande utan att avfärda teorierna – den använder dem medvetet och reflekterar över deras räckvidd.'}
+]},
+
+{id:'kritik', title:'Kritikbank', subtitle:'Invändningar och nyanseringar', steps:[
+{id:'k1', level:'A', type:'kritik', title:'Kritik mot Durkheim', question:'Sammanfatta kritiken mot Durkheims självmordsteori och argumentera för om den fortfarande är användbar.', model:'Jack Douglas (1967) visar att statistikkategorierna är socialt konstruerade – vad som räknas som självmord varierar mellan länder, tidsperioder och myndigheter. Durkheim kan därför inte belägga att hans tolkning av självmordens mening stämmer med individernas egna. Objektivismen har en blindfläck: Durkheim förutsätter att sociala fakta kan studeras som ting men saknar metod för att verifiera den inre psykologiska meningen. Trots kritiken är teorin fortfarande användbar som diagnos av sociala mönster – den synliggör sociala orsaker till ett till synes individuellt problem. Men den måste kompletteras med kvalitativa metoder och subjektiva perspektiv för att bli heltäckande. En A-nivåanalys använder Durkheim som ett verktyg för att se sociala mönster, inte som en heltäckande förklaring.'},
+{id:'k2', level:'A', type:'kritik', title:'Kritik mot Marx', question:'Sammanfatta kritiken mot Marx och argumentera för om hans teori fortfarande är relevant.', model:'Kritik: Förutsägelserna slog inte in (revolutionen uteblev i Västeuropa, välfärdsstaten reformerade kapitalismen). Teorin är ekonomiskt reduktionistisk – bortser från genus, etnicitet, kultur och politik. Klassbegreppet är för snävt för dagens komplexa klassstruktur med tjänstesektor, medelklass och precariat. Nyansering: Marx analytiska kärna – makt och exploatering i arbetslivet – är fortfarande användbar för att förstå globala produktionskedjor, gigekonomi och ojämlikhet. Alienationsteorin kan tillämpas på monotona eller kontrollerade arbeten. En nyanserad slutsats är att skilja mellan analytisk kärna (relevant) och historiska prognoser (inte relevant). Marx behöver uppdateras, inte avfärdas.'},
+{id:'k3', level:'A', type:'kritik', title:'Kritik mot Weber', question:'Sammanfatta kritiken mot Weber och argumentera för om hans teori fortfarande är användbar.', model:'Kritik: Värdeneutralitetsidealet är svårt att upprätthålla (Friedrich 1940 – Webers idealtypsanalys ledde honom att införa värdeomdömen i byråkratidiskussionen). Verstehen är intuitionistiskt – liknar konstnärlig tolkning, inte vetenskaplig metod. Idealtypen är perspektivistisk – beroende av forskarens värderingar. Habermas (1984): rationalitetsbegreppet är alltför inriktat på mål–medel, blind för kommunikativ rationalitet. Nyansering: Webers styrka är att han tar individens mening på allvar och synliggör rationaliseringens konsekvenser. Verstehen kan kombineras med empiriska metoder. Järnburen är inte oundviklig – kommunikativ rationalitet kan vara en motkraft. En A-nivåanalys använder Weber kritiskt: hans begrepp är kraftfulla men begränsade.'},
+{id:'k4', level:'A', type:'kritik', title:'Kritik mot Simmel', question:'Sammanfatta kritiken mot Simmel och argumentera för om hans teori fortfarande är användbar.', model:'Kritik: Formalism – bortser från historiskt och materiellt innehåll i sociala relationer. Impressionism – svårt att operationalisera empiriskt. Sorokins kritik har diskuterats kritiskt i senare Simmel-forskning – delvis feltolkning av formbegreppet, men kritiken mot den empiriska prövbarheten kvarstår. Nyansering: Simmels styrka är att han synliggör återkommande mönster i umgänget och fångar modernitetens ambivalens – både förluster och vinster. Hans begrepp (växelverkan, differentiering, blasé) är suggestiva och användbara för att förstå sociala medier, urbanisering och anonymitet – men bör kombineras med empirisk forskning för att bli vetenskapligt robusta.'},
+{id:'k5', level:'A', type:'kritik', title:'Metakritik – historisk kontext', question:'Diskutera varför klassikernas historiska kontext är en begränsning och hur man kan hantera den.', model:'Alla klassiker skrev i industrialiseringens genombrott. Marx klassbegrepp förutsätter en fabrikskapitalism som inte längre är dominerande; Durkheims självmordsstatistik är huvudsakligen från 1800-talet; Webers byråkratibegrepp utvecklades före informationsteknologin; Simmels storstadsanalys är från sekelskiftet 1900. Detta innebär inte att teorierna är värdelösa – men de måste anpassas och kombineras med nutida forskning. För A-nivå är det en styrka att kunna resonera om denna begränsning utan att avfärda teorierna. En nyanserad analys använder klassikerna som analytiska verktyg och kompletterar med nutida teorier och empiri.'},
+{id:'k6', level:'A', type:'kritik', title:'Försvara en teoretiker', question:'Välj en av klassikerna och argumentera för att teorin fortfarande är relevant trots kritiken.', model:'Exempel: Marx. Trots att förutsägelserna inte slog in är Marx analys av makt och exploatering fortfarande träffande för globala produktionskedjor (kakaoodling i Elfenbenskusten, elektroniktillverkning i Kina), gigekonomin (Uber, Foodora) och alienation i serviceyrken. Klassbegreppet behöver kompletteras med genus, etnicitet och precariat, men den underliggande analysen – att ekonomiska strukturer formar maktrelationer – är fortfarande giltig. Marx är inte passé – han behöver bara uppdateras. En A-nivåanalys använder Marx analytiska kärna utan att köpa hans historiska prognoser.'}
+]},
+
+{id:'slut', title:'Slutprov', subtitle:'Blandade frågor från hela kursen', steps:[
+{id:'p1', level:'E', type:'quiz', title:'Slutprov – kryssfrågor', questions:[
+{q:'Vilket är ett socialt faktum?', o:['Personlig åsikt','Normer i kollektivtrafiken','Drömmar','Gener'], c:1, e:'Sociala fakta = kollektiva normer som existerar utanför individen och utövar tvång på handlandet.'},
+{q:'Överbyggnad är…', o:['Fabriker','Politik, rätt, religion','Löner','Produktionsmedel'], c:1, e:'Överbyggnad = institutioner och idéer som enligt Marx formas av basen (ekonomin).'},
+{q:'Värderationellt handlande?', o:['Tradition','Känslor','Övertygelse oavsett konsekvenser','Målberäkning'], c:2, e:'Värderationellt handlande styrs av övertygelser och värderingar, oavsett konsekvenserna.'},
+{q:'Differentiering?', o:['Enhetlighet','Uppdelning i sfärer','Religion tar över','Klasskamp'], c:1, e:'Differentiering = uppdelning i allt fler specialiserade sfärer och roller.'},
+{q:'Anomiskt självmord?', o:['För stark integration','För låg integration','För låg reglering/snabb förändring','Psykisk sjukdom'], c:2, e:'Anomiskt självmord uppstår när gamla normer försvagas – samhället är i snabb förändring.'},
+{q:'Mesonivån?', o:['Psykologi','Organisationer','Strukturer','Endast staten'], c:1, e:'Mesonivån = organisationer, nätverk, institutioner.'},
+{q:'Vem myntade sociologi?', o:['Marx','Durkheim','Comte','Weber'], c:2, e:'Auguste Comte myntade begreppet sociologi.'},
+{q:'Alienation?', o:['Äga produktionsmedel','Främlingskap inför arbete/produkt/sig själv','Social integration','Följa tradition'], c:1, e:'Alienation = främlingskap inför arbetet, produkten, sig själv och andra.'}
+]},
+{id:'p2', level:'C', type:'skriv', title:'Kort 1 – Självmordstyper', question:'Förklara skillnaden mellan egoistiskt, altruistiskt och anomiskt självmord hos Durkheim.', model:'Egoistiskt: för låg integration – individen är för lite delaktig i socialt samspel och saknar sociala band. Altruistiskt: för stark integration – individen underordnar sig gruppen så starkt att det egna livet förlorar betydelse; gruppen blir viktigare än individen. Anomiskt: för låg reglering eller snabb förändring – gamla normer försvagas och individen vet inte vad som förväntas. Alla tre är sociala förklaringar till en till synes individuell handling.'},
+{id:'p3', level:'C', type:'skriv', title:'Kort 2 – Rationalisering', question:'Förklara vad Weber menar med rationalisering och ge ett exempel.', model:'Rationalisering innebär att handlingar i det moderna samhället alltmer styrs av förnuft och beräkning (målrationalitet) i stället för tradition och känslor. Resultatet är ett mer effektivt men också mer opersonligt samhälle. Exempel: byråkratins framväxt, där beslut fattas enligt regler och meriter snarare än personliga relationer. Ett annat exempel: vetenskapliga förklaringar ersätter religiösa som grund för världsbilden.'},
+{id:'p4', level:'C', type:'skriv', title:'Kort 3 – Mervärde', question:'Förklara vad Marx menar med mervärde.', model:'Mervärde är skillnaden mellan det värde arbetaren producerar och den lön arbetaren får. Det uppstår i produktionen, inte i cirkulationen: arbetaren skapar ett värde som är större än lönen, och ägaren tillägnar sig överskottet. Mervärdet är grunden för vinsten och för maktrelationen mellan kapitalist och proletär. Mervärdet är inte en ekonomisk slump utan en strukturell maktrelation – det är möjligt eftersom kapitalisten äger produktionsmedlen och arbetaren saknar dem.'},
+{id:'p5', level:'A', type:'fall', title:'Lång 1 – Fenomenanalys', context:'Välj ett nutida samhällsfenomen (t.ex. sociala medier, gigekonomi, segregation).', question:'Analysera fenomenet utifrån minst två klassiker och diskutera en begränsning i analysen.', model:'Exempel: sociala medier. Durkheim: anomi – nya normer är otydliga, gamla försvagas, ungdomar kan uppleva normlöshet och meningslöshet. Marx: alienation – sociala medier skapar en marknad där uppmärksamhet blir vara och identiteten kommodifieras; användaren producerar värde (data, innehåll) som någon annan tjänar på. Simmel: växelverkan – identiteter förhandlas i ömsesidig påverkan, blasé-attityden vid överflöd av intryck i flödet. Begränsning: teorierna utvecklades före digitala medier och måste anpassas. En nyanserad analys kombinerar klassikerna med nutida medieforskning om plattformskapitalism, algoritmer och digital identitet.'},
+{id:'p6', level:'A', type:'skriv', title:'Lång 2 – Durkheim vs Weber', question:'Jämför Durkheims och Webers syn på vad sociologin kan och bör göra. Diskutera styrkor och svagheter i båda positionerna.', model:'Durkheim: objektiv, positivistisk – samhället studeras som naturvetenskapen. Styrka: visar att individuella handlingar har sociala orsaker. Svaghet: kan inte komma åt subjektiv mening (Douglas 1967). Weber: Verstehen – sociologin måste förstå individens mening. Styrka: tar individens perspektiv på allvar. Svaghet: risk för intuitionism och värdeneutralitet är svårt. Slutsats: båda har giltiga poänger – en fullständig sociologi behöver både förklaring och förståelse. Durkheim visar att det finns sociala mönster; Weber visar att dessa mönster skapas genom meningsfulla handlingar. En nyanserad analys kombinerar båda perspektiven.'}
+]},
+
+{id:'repet', title:'Repetition & sammanfattning', subtitle:'Snabb repetition inför provet', steps:[
+{id:'r1', level:'E', type:'lektion', title:'Alla teoretiker – snabböversikt', content:`
+<h4>Marx</h4>
+<p>Ekonomi, klass, mervärde, alienation, klasskamp. Makroteoretiker. Nyckelbegrepp: bas/överbyggnad, bourgeoisi/proletariat, mervärde, alienation (4 aspekter), historisk materialism.</p>
+<h4>Durkheim</h4>
+<p>Sociala fakta, integration, anomi, självmordstyper (4), reglering. Makroteoretiker. Nyckelbegrepp: sociala fakta, anomi, integration, reglering, egoistiskt/altruistiskt/anomiskt/fatalistiskt självmord.</p>
+<h4>Weber</h4>
+<p>Verstehen, idealtyp, rationalisering, byråkrati (10 kännetecken), 4 handlingstyper. Mikro/makro. Nyckelbegrepp: Verstehen, värdeneutralitet, idealtyp, rationalisering, byråkrati, sekularisering, järnburen.</p>
+<h4>Simmel</h4>
+<p>Växelverkan, församhälleligande, differentiering, blasé-attityd. Mikroteoretiker. Nyckelbegrepp: växelverkan, församhälleligande, differentiering, blasé.</p>`},
+{id:'r2', level:'C', type:'lektion', title:'Nyckelbegrepp – checklista', content:`
+<ul>
+<li>Sociologi, aktör, struktur, mikro/meso/makro</li>
+<li>Norm, värdering, roll, socialisation, kultur, intersektionalitet</li>
+<li>Sociala fakta, anomi, integration, reglering</li>
+<li>Egoistiskt/altruistiskt/anomiskt/fatalistiskt självmord</li>
+<li>Bas, överbyggnad, bourgeoisi, proletariat, produktionsmedel, produktionsförhållanden</li>
+<li>Mervärde, alienation (4 aspekter), klassmedvetande, historisk materialism</li>
+<li>Verstehen, värdeneutralitet, idealtyp, 4 handlingstyper, rationalisering, byråkrati, sekularisering, järnburen</li>
+<li>Växelverkan, församhälleligande, differentiering, blasé</li>
+<li>Objektiv/subjektiv, interaktion, strukturell påverkan</li>
+</ul>`},
+{id:'r3', level:'A', type:'kritik', title:'Kritik – checklista', content:`
+<p><strong>Durkheim:</strong> Douglas (1967) – statistiken som social konstruktion. Objektivismens blindfläck. Stark som diagnos, svag som förklaring.</p>
+<p><strong>Marx:</strong> Förutsägelserna slog inte in. Ekonomisk reduktionism. Klassbegreppets otillräcklighet. Skilj analytisk kärna från historiska prognoser.</p>
+<p><strong>Weber:</strong> Friedrich (1940) – värdeneutralitet. Verstehen som intuitionism. Habermas (1984) – rationalitetsbegreppet. Järnburen inte oundviklig.</p>
+<p><strong>Simmel:</strong> Formalism. Impressionism. Sorokin – delvis feltolkning, men kritik mot empirisk prövbarhet kvarstår.</p>
+<p><strong>Metakritik:</strong> Historisk kontext. Ingen heltäckande teori. Kombinera perspektiven.</p>`},
+{id:'r4', level:'A', type:'skriv', title:'Din egen sammanfattning', question:'Skriv en egen sammanfattning av kursen (max 400 ord) där du förklarar skillnaderna mellan Marx, Durkheim, Weber och Simmel och ger ett exempel på hur de kan användas tillsammans.', model:'Marx förklarar samhället utifrån ekonomiska strukturer och klasskonflikt – produktionen och ägandet är avgörande. Durkheim förklarar samhället utifrån sociala fakta och integration – normer och sammanhållning är avgörande. Weber förklarar samhället utifrån individers subjektiva handlingar och rationalisering – mening och byråkratisering är avgörande. Simmel förklarar samhället utifrån växelverkan mellan individer – sociala former och differentiering är avgörande. Tillsammans kan de analysera ett fenomen flerdimensionellt: till exempel segregation – Marx ser ekonomi och klasstillhörighet, Durkheim ser integration och risk för anomi, Weber ser subjektiva livschanser och byråkratiska strukturer, Simmel ser vardagliga interaktioner och sociala gränser. En nyanserad analys kombinerar perspektiven och diskuterar deras begränsningar – särskilt att alla utvecklades i 1800-talets industrialisering och därför måste anpassas för att förklara dagens samhälle.'}
+]}
+];
+
+const begreppData = [
+{t:'Sociologi',c:'Grund',d:'Vetenskapen om samhället, sociala grupper och relationen mellan individ och samhälle. Det som skiljer sociologin från andra samhällsvetenskaper är att den systematiskt studerar samspelet mellan individ och samhälle – hur människor formas av samhället och samtidigt formar det.',e:'En sociolog kan studera varför vi beter oss olika i kollektivtrafiken, hur klasstillhörighet påverkar utbildningsval, eller varför vissa grupper har sämre hälsa. Sociologin ställer frågor om det som verkar självklart – och visar att det ofta har sociala förklaringar.'},
+{t:'Aktör',c:'Grund',d:'En individ eller grupp som agerar och gör egna val. Aktören har förmåga att fatta beslut och påverka sin situation – men handlar alltid inom ramar som sätts av samhälleliga strukturer.',e:'En elev som väljer yrke är en aktör – men valmöjligheterna påverkas av klass, kön, utbildning och familjens ekonomi. Aktören har agens men är aldrig helt fri från strukturella begränsningar.'},
+{t:'Struktur',c:'Grund',d:'Relativt stabila mönster, regler, normer, institutioner och maktförhållanden som påverkar människors handlande. Strukturer existerar utanför den enskilda individen men formar hennes möjligheter och begränsningar.',e:'Klasstillhörighet, utbildningssystemet, arbetsmarknaden, lagen och könsnormer är strukturer. De finns där innan vi föds och påverkar våra liv utan att vi alltid märker det.'},
+{t:'Strukturalism',c:'Grund',d:'Synsätt som betonar att samhällets strukturer formar individen. Individens handlande och möjligheter förklaras i första hand av de strukturella förhållandena – inte av individuella val.',e:'Durkheim menar att sociala fakta styr individen; Marx menar att klasstillhörigheten formar medvetandet. Strukturalismen betonar att "människan är produkten av sin omgivning".'},
+{t:'Individualism',c:'Grund',d:'Synsätt som betonar individens fria vilja och förmåga att påverka och förändra samhället. Individen ses som den primära förklaringsfaktorn – samhället formas av individers val.',e:'En entreprenör som startar företag och skapar arbetstillfällen påverkar samhället genom sina val. Individualismen betonar individens agens – men glömmer ofta de strukturella begränsningarna.'},
+{t:'Aktör–struktur (balanserat perspektiv)',c:'Grund',d:'Ett synsätt där både individens handlande och samhälleliga strukturer ses som ömsesidigt påverkande. Kallas ibland dualitet, strukturation (Giddens) eller relationellt perspektiv. Det handlar om förklaringsvikt – inte om att välja sida.',e:'En elev formas av skolan och samhället (struktur) men kan också genom sina val förändra sin situation och påverka sin omgivning (aktör). Struktur och aktör är två sidor av samma process – inte två separata saker.'},
+{t:'Mikronivå',c:'Grund',d:'Analysnivå som fokuserar på individen och små grupper – ansikte-mot-ansikte-interaktioner, samtal, vardagliga handlingar och hur individer upplever sin situation.',e:'Hur en person sänker rösten på bussen för att inte störa, hur ett samtal mellan två vänner utvecklas, hur en elev känner sig inför ett prov. Webers Verstehen och Simmels växelverkan arbetar på mikronivå.'},
+{t:'Mesonivå',c:'Grund',d:'Analysnivå som fokuserar på grupper, organisationer och institutioner – den förmedlande nivån mellan individ och samhälle. Hit hör skolor, föreningar, arbetsplatser, myndigheter och andra sammanslutningar.',e:'Hur en skolas regler och kultur formar elevernas beteende, hur en fackförening organiserar sina medlemmar, hur en myndighet fattar beslut. Mesonivån gör det möjligt att studera organisationer utan att fastna i antingen individualism eller strukturalism.'},
+{t:'Makronivå',c:'Grund',d:'Analysnivå som fokuserar på stora samhällsstrukturer och samhällsförändringar – ekonomi, politik, klass, religion, kultur och historiska processer.',e:'Hur klasskillnader påverkar människors livschanser, hur kapitalismen utvecklas, hur sekulariseringen förändrar samhället. Marx och Durkheim arbetar på makronivå.'},
+{t:'Norm',c:'Grund',d:'Skriven eller oskriven regel för hur man förväntas bete sig i en given situation. Normer kan vara formella (lagar, skolregler) eller informella (att man hälsar på bekanta). De upprätthålls genom sociala sanktioner – positiva reaktioner när vi följer dem, negativa när vi bryter dem.',e:'Att inte prata högt på bussen är en oskriven norm. Att komma i tid till lektionen är en formell norm. Normer kan skilja sig mellan kulturer och grupper – vilket kan leda till kulturkrockar.'},
+{t:'Värdering',c:'Grund',d:'En föreställning om vad som är rätt, viktigt eller önskvärt. Värderingar är djupare och mer abstrakta än normer – de utgör grunden som normerna vilar på.',e:'Jämlikhet, frihet och respekt för privatliv är värderingar. Normen att stå i kö bygger på värderingen att alla är lika värda. Värderingar är ofta omedvetna och tas för givna – men de styr våra handlingar.'},
+{t:'Roll',c:'Grund',d:'Förväntningar på hur en person ska bete sig utifrån sin position. En person har många roller samtidigt (elev, dotter, vän, anställd) och dessa kan krocka – det kallas rollkonflikt.',e:'En lärare förväntas vara auktoritativ men också stöttande. En tonåring kan uppleva rollkonflikt mellan att vara "duktig elev" och "populär i gänget". Roller är socialt skapade – de existerar inte i sig själva utan genom förväntningar.'},
+{t:'Socialisation',c:'Grund',d:'Den livslånga process där individen lär sig samhällets normer, värderingar, språk och beteenden. Primär socialisation sker i familjen under barndomen; sekundär socialisation sker i skolan, arbetslivet och andra sammanhang senare i livet.',e:'Ett barn som lär sig säga tack, en ny anställd som lär sig företagets kultur, en invandrare som lär sig svenska normer. Socialisationen formar oss till sociala varelser – utan den skulle vi inte kunna leva i samhället.'},
+{t:'Kultur',c:'Grund',d:'Gemensamma normer, värderingar, traditioner, kunskaper och sätt att leva som delas av en grupp eller ett samhälle. Kultur är inte bara "konst och musik" utan hela det meningssystem som gör att vi kan förstå varandra.',e:'Svensk kultur värderar till exempel privatliv och jämlikhet, medan andra kulturer kan värdera kollektiv gemenskap och hierarki. Kulturella skillnader kan skapa missförstånd – men kultur är inte statisk utan förändras över tid och genom möten.'},
+{t:'Intersektionalitet',c:'Grund',d:'Begreppet beskriver hur flera sociala kategorier (kön, klass, etnicitet, ålder, sexualitet, funktionsvariation) samspelar och skapar unika erfarenheter av privilegier och förtryck. En person kan vara privilegierad i en dimension och förtryckt i en annan. Begreppet myntades av Kimberlé Crenshaw 1989.',e:'En ung kvinna med utländsk bakgrund och låg inkomst möter inte samma hinder som en ung man med svensk bakgrund och hög inkomst. Hennes erfarenhet kan inte förstås genom att bara titta på en faktor i taget – det är kombinationen som skapar hennes unika position.'},
+{t:'Sociala fakta',c:'Durkheim',d:'Normer, regler, värderingar och kollektiva föreställningar som existerar utanför individen men utövar tvång på hennes handlingar. Sociala fakta är yttre (existerar utanför individen), tvingande (vi kan inte ignorera dem utan konsekvenser) och kollektiva (de delas av gruppen).',e:'Svenska normer för hur man beter sig i kollektivtrafiken är ett socialt faktum – de finns där oavsett vad den enskilda individen tycker, och bryter man mot dem får man negativa reaktioner. Språk, lagar och pengar är andra exempel på sociala fakta.'},
+{t:'Positivism',c:'Durkheim',d:'Idén att samhället kan studeras vetenskapligt genom observation, statistik och systematiska metoder – ungefär som naturvetenskapen studerar naturen. Positivismen förutsätter att det finns objektiva sociala fakta som kan mätas och jämföras.',e:'Durkheims självmordsstudie är ett typexempel: han jämförde självmordstal mellan olika grupper och länder för att hitta sociala mönster. Positivismen möjliggör objektiv kunskap – men kritiseras för att den inte kan fånga subjektiv mening.'},
+{t:'Funktionalism',c:'Durkheim',d:'Teorin att samhällets olika delar (skolan, familjen, religionen, ekonomin) fyller funktioner som bidrar till helhetens funktion och stabilitet. Samhället ses som en organism där delarna är beroende av varandra.',e:'Skolan socialiserar barn till samhällsmedborgare, familjen reproducerar befolkningen, religionen skapar gemenskap. Om en del inte fungerar påverkar det helheten – till exempel kan en kris i ekonomin skapa anomi i samhället.'},
+{t:'Anomi',c:'Durkheim',d:'Ett tillstånd av normlöshet eller obalans där individen saknar tydliga regler, mål och riktlinjer. Anomi uppstår när samhället genomgår snabba förändringar som upplöser gamla normer utan att nya har etablerats.',e:'Under pandemin upplöstes normerna kring umgänge, arbete och resor över en natt – många upplevde en känsla av meningslöshet och normlöshet. Andra exempel: ekonomiska kriser, plötslig framgång eller skilsmässa kan skapa anomi.'},
+{t:'Integration',c:'Durkheim',d:'Graden av delaktighet i socialt samspel med andra människor. Hög integration = starka sociala band; låg integration = isolering. Durkheim menade att integration är avgörande för människors välbefinnande – för lite integration leder till egoistiskt självmord, för mycket till altruistiskt.',e:'Gifta har lägre självmordstal än ogifta eftersom de är mer integrerade. Judar hade lägre självmordstal än protestanter eftersom de hade starkare kollektiv sammanhållning. Krig minskar självmordstalen eftersom det skapar starkare kollektiv sammanhållning.'},
+{t:'Reglering',c:'Durkheim',d:'Graden av social kontroll över individens begär och handlingar. Hög reglering = tydliga ramar och gränser; låg reglering = gränslöshet och normupplösning. Durkheim menade att både för låg och för hög reglering kan vara skadlig.',e:'För låg reglering leder till anomiskt självmord (ingen vet vad som förväntas). För hög reglering leder till fatalistiskt självmord (individen ser ingen möjlighet till förändring). Exempel på för hög reglering: slavar i extrema diktaturer, fångar i totala institutioner.'},
+{t:'Egoistiskt självmord',c:'Durkheim',d:'Självmord som uppstår vid för låg integration – individen är för lite delaktig i socialt samspel, saknar starka band till andra och känner sig isolerad. De egna målen väger tyngre än gruppens.',e:'En ensamstående person utan nära relationer eller socialt nätverk. En person som nyligen flyttat till en ny stad och inte har några vänner. En äldre person vars barn flyttat och vars partner dött. Gemensamt: svaga sociala band.'},
+{t:'Altruistiskt självmord',c:'Durkheim',d:'Självmord som uppstår vid för stark integration – individen är så starkt knuten till gruppen att det egna livet förlorar betydelse. Gruppen är viktigare än individen – individen offrar sig för något högre.',e:'Kamikazepiloter som offrar sig för sitt land, äldre i vissa kulturer som väljer att dö för att inte bli en börda, änkan som följer sin man i döden. Individen ser sitt eget liv som mindre viktigt än gruppens väl.'},
+{t:'Anomiskt självmord',c:'Durkheim',d:'Självmord som uppstår vid för låg reglering eller snabb samhällsförändring. När gamla normer och mål försvagas vet individen inte längre vad som förväntas – det skapar meningslöshet och kaos.',e:'Under en ekonomisk kris kan en person som förlorat allt känna att världen inte längre följer några begripliga regler. Plötslig framgång kan också skapa anomi – när allt förändras på en gång vet man inte längre vad som är normalt.'},
+{t:'Fatalistiskt självmord',c:'Durkheim',d:'Självmord som uppstår vid för stark reglering – individen är så hårt styrd av regler och kontroll att framtiden känns stängd och hopplös. Individen ser ingen möjlighet till förändring.',e:'Slavar i extrema diktaturer, fångar i totala institutioner, personer i starkt patriarkala samhällen där de inte har någon handlingsfrihet. Durkheim nämnde denna typ bara i en fotnot i Le Suicide – därför utelämnas den ofta i kortare framställningar.'},
+{t:'Bas',c:'Marx',d:'Den ekonomiska strukturen – produktionsförhållandena och produktionsmedlen. Basen är samhällets "fundament" som enligt Marx formar överbyggnaden.',e:'I ett kapitalistiskt samhälle är basen den privata äganderätten till produktionsmedlen och relationen mellan ägare och arbetare. Detta formar i sin tur lagar (som skyddar äganderätten), religion och kultur.'},
+{t:'Överbyggnad',c:'Marx',d:'Politik, rätt, religion, kultur och ideologi – det som vilar på basen och enligt Marx formas av den. De som äger produktionsmedlen har också makt att forma samhällets idéer och institutioner.',e:'Lagar som skyddar äganderätten, religionen som legitimerar rådande maktförhållanden, mediernas framställning av klassfrågor. Överbyggnaden är inte bara en spegelbild av ekonomin – men enligt Marx sätter basen ramarna för vad som är möjligt i överbyggnaden.'},
+{t:'Bourgeoisi',c:'Marx',d:'Ägarna av produktionsmedlen – det vill säga kapitalisterna. De äger fabriker, maskiner, mark och kapital, och kan därför bestämma över produktionen och tillägna sig mervärdet.',e:'Fabriksägaren Herr Bergström i fabriksberättelsen. En aktieägare i ett stort företag. En fastighetsägare som hyr ut lokaler. Gemensamt: de äger det som behövs för att producera – och kan därför leva på andras arbete.'},
+{t:'Proletariat',c:'Marx',d:'Arbetarna som saknar produktionsmedel och därför måste sälja sin arbetskraft för lön. Proletariatet äger inget annat än sin arbetsförmåga – och är därför beroende av att sälja den för att överleva.',e:'Anna på fabriken som syr skodelar för lön. En lagerarbetare. En gig-arbetare som kör Foodora. Gemensamt: de äger inte det de arbetar med – de säljer sin tid och sin arbetskraft.'},
+{t:'Produktionsmedel',c:'Marx',d:'De resurser som används i produktionen utöver arbetskraften: råvaror, maskiner, verktyg, mark, byggnader. Enligt Marx ägs produktionsmedlen av kapitalisterna – det är detta ägande som ger dem makt över arbetarna.',e:'Fabriken, maskinerna, marken, råvarorna. I ett jordbrukssamhälle: jorden, traktorerna, utsädet. I ett modernt företag: kontoret, datorerna, patenten. Att äga produktionsmedlen är att äga möjligheten att skapa värde.'},
+{t:'Produktionsförhållanden',c:'Marx',d:'Relationerna mellan människor i produktionen – särskilt mellan ägare och arbetare. Vem bestämmer? Vem arbetar? Vem får vinsten? Produktionsförhållandena är en del av basen.',e:'Förhållandet mellan arbetsgivare och arbetstagare. I en fabrik: ägaren bestämmer, arbetaren lyder. I ett kooperativ: arbetarna äger tillsammans och bestämmer gemensamt. Produktionsförhållandena formar maktrelationerna i samhället.'},
+{t:'Mervärde',c:'Marx',d:'Skillnaden mellan det värde arbetaren producerar och den lön arbetaren får. Mervärdet tillägnas av kapitalisten och är grunden för vinsten. Det uppstår i produktionen – inte i cirkulationen – eftersom arbetaren producerar ett värde som är större än lönen.',e:'En arbetare tjänar 600 kr per dag men producerar varor till ett värde av 1000 kr. Skillnaden – 400 kr – är mervärdet som fabriksägaren tillägnar sig. Mervärdet är inte en ekonomisk slump utan en strukturell maktrelation: ägaren kan tillägna sig det eftersom hen äger produktionsmedlen.'},
+{t:'Alienation',c:'Marx',d:'Främlingskap inför arbetet, produkten, sig själv och andra människor. Uppstår när arbetet inte längre är ett uttryck för människan utan ett medel för överlevnad. Marx urskiljer fyra aspekter: alienation från produkten, arbetsprocessen, sig själv som artväsen och andra människor.',e:'En fabriksarbetare som bara gör en liten del av produktionen och aldrig ser slutprodukten är alienerad från produkten. En anställd som inte får bestämma över sin arbetstid är alienerad från arbetsprocessen. En person som känner att arbetet är meningslöst är alienerad från sig själv som artväsen.'},
+{t:'Klassmedvetande',c:'Marx',d:'Att arbetarna inser sin gemensamma situation och sina gemensamma intressen. Istället för att se sina problem som individuella otur börjar de se att problemen är strukturella och delas av alla i samma situation.',e:'När Anna och hennes kollegor börjar prata om sina villkor och inser att de alla känner sig utnyttjade – det är klassmedvetande i vardande. Det kan leda till organisering (fackförening) och ytterst till förändring av maktbalansen.'},
+{t:'Historisk materialism',c:'Marx',d:'Marx teori att historien rör sig genom olika produktionssätt (slaveri, feodalism, kapitalism, kommunism) som drivs av materiella motsättningar mellan klasser. Kallas även historiematerialism.',e:'Övergången från feodalism till kapitalism förklaras genom att nya produktivkrafter (industrin) skapade nya klassmotsättningar (bourgeoisi/proletariat) som sprängde det gamla systemet. Marx menade att samma process skulle leda från kapitalism till kommunism.'},
+{t:'Verstehen',c:'Weber',d:'Att försöka förstå en social handling utifrån den mening individen själv ger den. Verstehen är Webers metod – till skillnad från Durkheims objektiva positivism. Weber menade att samhällsvetenskapen måste vara förstående, inte bara förklarande.',e:'Att förstå varför en person väljer ett visst yrke genom att sätta sig in i personens egna motiv och värderingar. Att förstå varför någon väljer att fira en högtid genom att förstå vad högtiden betyder för hen. Verstehen kräver empati och tolkning.'},
+{t:'Värdeneutralitet',c:'Weber',d:'Vetenskapens ideal att inte låta personliga värderingar styra forskningen. Forskaren ska beskriva och förklara, inte döma eller värdera.',e:'En sociolog som studerar brottslighet ska inte döma brottslingarna – utan beskriva och förklara fenomenet. En forskare som studerar religiösa grupper ska inte ta ställning för eller emot religionen. Värdeneutralitet är lätt att formulera men svårt att upprätthålla i praktiken.'},
+{t:'Idealtyp',c:'Weber',d:'En analytisk tankebild eller grovhuggen generalisering som används som jämförelseinstrument. Den är inte en beskrivning av verkligheten utan ett verktyg för att förstå den. Idealtypen är en renodlad bild som aldrig existerar i ren form.',e:'Webers tio kännetecken för byråkratin är en idealtyp. Ingen verklig byråkrati uppfyller alla tio kännetecken perfekt – men genom att jämföra en verklig organisation med idealtypen kan man förstå vad som gör den mer eller mindre byråkratisk. Idealtypen är ett jämförelseinstrument, inte ett ideal att sträva efter.'},
+{t:'Traditionellt handlande',c:'Weber',d:'Handling som styrs av vanor och tradition. Individen handlar på ett visst sätt för att det alltid har varit så – inte för att hen har reflekterat över det.',e:'Att fira jul för att familjen alltid har gjort det. Att äta middag vid samma tid varje dag för att det är tradition. Att gå i kyrkan på söndagar för att det är sedvänja. Det traditionella handlandet är vanemässigt och oreflekterat.'},
+{t:'Affektuellt handlande',c:'Weber',d:'Handling som styrs av känslor och affektioner – ilska, glädje, rädsla, kärlek. Individen handlar utan att reflektera över konsekvenserna.',e:'Att skrika av ilska under ett bråk. Att krama någon av glädje. Att springa undan av rädsla. Det affektuella handlandet är impulsivt och känslostyrt – det kan vara både positivt (att visa kärlek) och negativt (att slå av ilska).'},
+{t:'Värderationellt handlande',c:'Weber',d:'Handling som styrs av en medveten övertygelse om vad som är rätt – oavsett konsekvenser. Individen handlar utifrån sina värderingar även om det får negativa konsekvenser för hen själv.',e:'Att vägra ljuga för att man anser att det alltid är fel – även om det skulle gynna en att ljuga. Att vägra delta i krig för att man är pacifist – även om det leder till straff. Värderationellt handlande kräver medveten reflektion över vad som är rätt och fel.'},
+{t:'Målrationellt handlande',c:'Weber',d:'Handling som styrs av ett medvetet mål och beräkning av vilka medel som bäst leder dit. Individen kalkylerar över vilka handlingar som är mest effektiva för att uppnå det uppsatta målet.',e:'Att plugga för att få högsta möjliga betyg – man beräknar vilka studietekniker som ger bäst resultat. Att spara pengar för att kunna köpa en bostad. Det målrationella handlandet är det mest utpräglat "moderna" handlandet enligt Weber – det är den typ som dominerar i byråkrati och kapitalism.'},
+{t:'Byråkrati',c:'Weber',d:'Rationaliseringens organisatoriska form: hierarki, klart angivna funktioner, meritokratiska urvalsprinciper, kontrakt, fasta löner, karriärvägar och ett enhetligt kontrollsystem. Byråkratin är effektiv och förutsägbar – men samtidigt opersonlig.',e:'En statlig myndighet, ett sjukhus, en skola, ett storföretag. Byråkratin gör det möjligt att hantera stora organisationer effektivt – men kan också skapa frustration hos medborgare som möts av regler och blanketter. Weber såg byråkratin som både nödvändig och hotande.'},
+{t:'Järnburen',c:'Weber',d:'Metafor för det rationella samhällets frihetshot. Ett system som är effektivt men som hotar människans frihet och meningsskapande. Människan blir en "specialist utan ande, njutningsmänniska utan hjärta".',e:'När byråkratin och rationaliseringen genomsyrar hela samhället blir människan fångad i ett system av regler, effektivitet och kontroll. Hon kan inte längre handla utifrån värderingar eller känslor – bara utifrån beräkning. Järnburen är inte fysisk – den är en metafor för hur det moderna samhället fångar människan.'},
+{t:'Rationalisering',c:'Weber',d:'Processen där handlingar i det moderna samhället alltmer styrs av förnuft och beräkning (målrationalitet) i stället för tradition och känslor. Rationaliseringen driver byråkratisering och sekularisering – och skapar järnburen.',e:'Byråkratins framväxt, där beslut fattas enligt regler och meriter snarare än personliga relationer. Vetenskapliga förklaringar som ersätter religiösa. Effektivisering av arbetslivet genom standardisering och mätning. Rationaliseringen är en av de mest genomgripande processerna i det moderna samhället.'},
+{t:'Sekularisering',c:'Weber',d:'Processen där religionens inflytande över samhället minskar. Vetenskapliga förklaringar tar över där religionen tidigare gav mening. Religionen blir en privatsak snarare än en samhällelig institution.',e:'Vetenskapliga förklaringar ersätter religiösa förklaringar av naturen och samhället. Kyrkans makt över politik och utbildning minskar. Konst och kultur blir nya arenor för meningsskapande – men på ett mer fragmentiserat sätt än religionen.'},
+{t:'Växelverkan',c:'Simmel',d:'Att samhället uppstår genom ömsesidig påverkan mellan individer. Samhället är inte en sak som existerar oberoende av människorna – det är en pågående process där individer genom sina handlingar ständigt skapar och omskapar det vi kallar "samhället".',e:'Två personer som samtalar påverkar varandra – den ena säger något, den andra reagerar, och samtalet utvecklas i en riktning som ingen av dem ensam hade kunnat förutse. Växelverkan är grunden för allt socialt liv – från samtal till stora samhällsprocesser.'},
+{t:'Församhälleligande',c:'Simmel',d:'De former genom vilka individer ingår i ömsesidiga relationer och bildar samhälleliga enheter. Individen blir till som social varelse genom att ingå i relationer med andra – människan blir människa genom samhället.',e:'Ett barn blir en social varelse genom familjen. En ny elev blir en del av klassen genom att ingå i klassens sociala relationer. Församhälleligande är den process genom vilken samhället uppstår ur socialt samspel – inte en gång för alla utan ständigt på nytt.'},
+{t:'Differentiering',c:'Simmel',d:'Uppdelning av samhället i allt fler specialiserade sfärer, roller och funktioner. Det moderna samhället är mer differentierat än det traditionella – vi har fler roller, fler yrken, fler sociala sammanhang som är separerade från varandra.',e:'Moderna samhällen har tusentals yrken och separata sfärer för arbete, fritid, religion och familj. Samma person kan vara lärare på jobbet, mamma hemma och fotbollsspelare på fritiden – olika roller i olika differentierade sfärer.'},
+{t:'Blasé-attityd',c:'Simmel',d:'En avtrubbad, distanserad hållning till omvärlden som uppstår till följd av överstimulering. I storstaden utsätts människan för ett överflöd av intryck och nervstimuli, vilket leder till en psykologisk försvarsmekanism: man slutar reagera känslomässigt på allt.',e:'Storstadsbon som går förbi tiggare på gatan utan att reagera. Pendlande som scrollar på mobilen utan att lägga märke till omgivningen. Blasé-attityden är inte ett personlighetsdrag utan en konsekvens av den sociala miljön – den uppstår ur överstimuleringen.'},
+{t:'Objektiv',c:'Metod',d:'Det som kan observeras och mätas oberoende av individers tolkningar. Objektiv kunskap är kunskap som är oberoende av vem som observerar – den kan verifieras av andra.',e:'Självmordsstatistik är ett försök till objektiv kunskap – den bygger på mätbara data. Men kritiker som Douglas menar att statistiken är socialt konstruerad – vad som räknas som självmord varierar. Objektivitet är ett ideal som alltid är svårt att uppnå helt.'},
+{t:'Subjektiv',c:'Metod',d:'Individers inre upplevelser, tolkningar och meningsskapande. Subjektiv kunskap är kunskap om hur människor upplever och förstår sin värld – den kan inte mätas på samma sätt som objektiv kunskap.',e:'Varför en person känner meningslöshet, varför någon väljer att begå självmord, vad en religiös ritual betyder för den som utövar den. Subjektiv kunskap kräver Verstehen – att man försöker förstå individens eget perspektiv.'}
+];
+
+const flashcardData = begreppData.map(b => ({f:b.t, b:b.d, c:b.c}));
+
+const kritikData = [
+{theorist:'Durkheim', points:[
+{t:'Statistiken som social konstruktion', x:'Jack Douglas (1967) visar att de officiella statistikkategorierna för självmord är socialt konstruerade. Vad som räknas som självmord varierar mellan länder, tidsperioder och myndigheter – vissa dödsfall registreras som olyckor eller "okänd orsak" av hänsyn till familjen eller på grund av religiösa tabun. Durkheims statistiska bas är därför otillförlitlig, och hans slutsatser kan vila på systematiskt snedvridna data. Douglas menar också att Durkheim inte kan belägga att de sociala betydelser han tillskriver självmorden verkligen är desamma som de avsedda betydelserna hos de individer som begick självmord.', s:'Douglas, J. (1967), The Social Meanings of Suicide. Princeton University Press.', r:'<strong>Nyansering:</strong> Durkheims styrka är att han visar att självmord har sociala mönster – hans svaghet är att statistiken inte kan fånga den subjektiva meningen. Teorin är starkast som diagnos av sociala mönster, svagare som förklaring av individuella handlingar. En A-nivåanalys använder Durkheim som ett verktyg för att se sociala mönster, inte som en heltäckande förklaring.'},
+{t:'Objektivismens blindfläck', x:'Durkheim förutsätter att sociala fakta kan studeras som "ting" – men han har ingen metod för att verifiera att hans tolkning av självmordens sociala mening är korrekt. Han kan inte komma åt den inre psykologiska mening som driver individen – han studerar bara det yttre beteendet (statistik) och drar slutsatser om det inre (mening). Detta metodologiska gap går rakt in i hans positivistiska program.', s:'Allmän metodologisk kritik mot positivismen.', r:'<strong>Nyansering:</strong> Teorin behöver kompletteras med kvalitativa metoder – intervjuer, psykologiska studier – för att komma åt den subjektiva dimensionen. Durkheims objektivism är en styrka när det gäller att identifiera sociala mönster men en svaghet när det gäller att förklara individuella handlingar.'}
+]},
+{theorist:'Marx', points:[
+{t:'Förutsägelserna slog inte in', x:'Marx förutsåg att kapitalismen skulle leda till en revolutionär situation där proletariatet tog makten. Så blev det inte i Västeuropa. Istället reformerades kapitalismen genom fackföreningar, välfärdsstaten och demokratiska reformer. Arbetarklassens levnadsvillkor förbättrades gradvis – inte genom revolution utan genom politiska kompromisser. Marx underskattade kapitalismens förmåga att anpassa sig.', s:'Historisk utveckling efter Marx.', r:'<strong>Nyansering:</strong> Marx analytiska kärna – makt och exploatering i arbetslivet – kan fortfarande vara giltig även om hans historiska förutsägelser inte slog in. En nyanserad analys skiljer mellan den analytiska kärnan och de historiska prognoserna.'},
+{t:'Ekonomisk reduktionism', x:'Marx reducerar historiska utvecklingsförlopp till i första hand ekonomi och produktionsmedlen. Därmed bortser teorin från faktorer som genus, etnicitet, religion och politik – faktorer som inte kan förklaras enbart ekonomiskt. Webers sociologi kritiserar Marx just för denna ekonomiska reduktionism och för att inte tillräckligt teoretisera det kausala förklarandet av mänskligt handlande.', s:'Webers sociologi och allmän samhällsvetenskaplig kritik.', r:'<strong>Nyansering:</strong> Webers rationaliseringsteori visar att kulturella och institutionella faktorer har egen kraft – de är inte bara spegelbilder av ekonomiska förhållanden. En A-nivåanalys kombinerar Marx ekonomiska analys med Webers kulturella analys.'},
+{t:'Klassbegreppets otillräcklighet', x:'Dagens samhälle har en mer komplex klassstruktur än den binära uppdelningen bourgeoisi/proletariat. Vi har tjänstesektor, medelklass, precariat (osäkra anställningar), globala produktionskedjor och en växande klyfta mellan hög- och låginkomsttagare inom samma "klass". Marx klassbegrepp fångar inte dessa nyanser.', s:'Nutida klassteori.', r:'<strong>Nyansering:</strong> Marx binära modell fungerar bra som analysverktyg i förenklade fall (som fabriksberättelsen), men behöver kompletteras med nyare klassteori för att förklara dagens samhälle.'}
+]},
+{theorist:'Weber', points:[
+{t:'Värdeneutralitet i praktiken', x:'Carl Friedrich (1940) pekar på att Webers idealtypsanalys ledde honom att införa värdeomdömen i diskussionen om byråkrati. Värdeneutralhetsidealet är lätt att formulera men svårt att upprätthålla i praktiken. Forskaren gör alltid val – vad som studeras, vilka idealtyper som används, vilka begrepp som definieras – och dessa val påverkas av värderingar.', s:'Friedrich, C.J. (1940), "Some Observations on Weber\'s Analysis of Bureaucracy", i Merton et al. (red.), Reader in Bureaucracy. Free Press.', r:'<strong>Nyansering:</strong> Kritiken visar att värdeneutralitet är ett ideal, inte en uppnåelig verklighet. En A-nivåanalys noterar att forskaren alltid gör val som påverkas av värderingar – men att idealet ändå är viktigt som riktmärke.'},
+{t:'Verstehen som intuitionism', x:'Webers Verstehen-begrepp kritiseras för att vara intuitionistiskt – det liknar mer en konstnärlig tolkning än en vetenskaplig metod. Hur kan man veta att man har "förstått" en handling korrekt? Var går gränsen mellan tolkning och gissning? Kritikerna menar att Verstehen riskerar att bli subjektivt godtycke om det inte kombineras med empiriska metoder.', s:'Allmän metodologisk kritik.', r:'<strong>Nyansering:</strong> Verstehen är ett nödvändigt komplement till kausala förklaringar, men det behöver kombineras med empiriska metoder (intervjuer, observationer, dokument) för att bli vetenskapligt robust.'},
+{t:'Rationalitetsbegreppet', x:'Jürgen Habermas (1984) menar att Weber orienterar sitt rationalitetsbegrepp alltför starkt mot mål–medel-relationen. Weber definierar rationalitet som förmågan att välja de bästa medlen för att uppnå ett givet mål – men han förbiser en annan form av rationalitet: kommunikativ rationalitet, som uppstår i ömsesidig förståelse mellan människor.', s:'Habermas, J. (1984), The Theory of Communicative Action, vol. 1. Beacon Press.', r:'<strong>Nyansering:</strong> Habermas delar Webers oro för rationaliseringens konsekvenser men inte hans pessimistiska slutsats att järnburen är oundviklig. Kommunikativ rationalitet kan vara en motkraft mot den instrumentella rationaliteten.'}
+]},
+{theorist:'Simmel', points:[
+{t:'Formalism', x:'Simmels sociologi kritiseras för att vara alltför formalistisk: genom att fokusera på sociala former riskerar han att bortse från det historiska och materiella innehållet i sociala relationer. Formerna kan bli tomma abstraktioner om de inte kopplas till historiska och materiella sammanhang.', s:'Allmän kritik mot formell sociologi.', r:'<strong>Nyansering:</strong> Simmels styrka är att han synliggör återkommande mönster i umgänget – hans svaghet är att formerna kan bli tomma abstraktioner om de inte kopplas till historiska och materiella sammanhang.'},
+{t:'Impressionism', x:'Simmels analys av storstaden är impressionistisk snarare än systematiskt empirisk. Hans begrepp (som blasé-attityden) är suggestiva men svåra att operationalisera för empirisk forskning. De beskriver snarare än förklarar.', s:'Allmän metodologisk kritik.', r:'<strong>Nyansering:</strong> Simmel skrev i en essäistisk tradition. Hans begrepp är suggestiva men svåra att pröva. En A-nivåanalys noterar att hans bidrag främst är teoretiskt-idémässigt, inte empiriskt.'},
+{t:'Sorokins kritik – och frågan om dess giltighet', x:'Pitirim Sorokin riktade enligt kritiken "skoningslös kritik" mot Simmels formbegrepp. En del av Sorokins invändningar har diskuterats kritiskt i senare Simmel-forskning – det finns argument för att Sorokin missförstod Simmels användning av "form" som en provisorisk analytisk analogi. Kritiken mot den empiriska prövbarheten kvarstår dock som giltig.', s:'Akademisk diskussion om Simmels formbegrepp; se t.ex. diskussioner i Simmel-studier.', r:'<strong>Nyansering:</strong> En del av kritiken mot Simmel kan vila på feltolkning, medan annan kritik – att hans analyser är svåra att pröva empiriskt – kvarstår. En A-nivåanalys skiljer mellan välgrundad och svagare kritik – källkritik är avgörande även i teorikritik.'}
+]},
+{theorist:'Metakritik', points:[
+{t:'Historisk kontext', x:'Klassikerna skrev i en specifik historisk kontext – industrialiseringens genombrott – och deras teorier kan därför inte utan vidare tillämpas på dagens samhälle. Marx klassbegrepp förutsätter en fabrikskapitalism som inte längre är dominerande; Durkheims självmordsstatistik bygger huvudsakligen på 1800-talets data (Le Suicide, 1897); Webers byråkratibegrepp utvecklades före informationsteknologins genombrott; Simmels storstadsanalys är från sekelskiftet 1900.', s:'Allmän historisk kritik.', r:'<strong>Nyansering:</strong> Detta innebär inte att teorierna är värdelösa, men att de måste anpassas och kombineras med nutida forskning för att förklara nutida fenomen. För A-nivå är det en styrka att kunna resonera om denna begränsning utan att avfärda teorierna.'},
+{t:'Ingen heltäckande teori', x:'Ingen av klassikerna ger en heltäckande förklaring. Marx fokuserar på ekonomi, Durkheim på normer, Weber på mening, Simmel på interaktion. Varje teori belyser vissa aspekter men missar andra.', s:'Allmän teorikritik.', r:'<strong>Nyansering:</strong> En nyanserad analys kombinerar teorierna. Marx kan förklara ekonomiska strukturer, Durkheim sociala normer, Weber subjektiv mening och Simmel vardaglig interaktion. Tillsammans ger de en flerdimensionell bild som ingen enskild teori kan ge.'}
+]}
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const SK='socio1_v3_progress', FK='socio1_v3_fc';
+let progress = loadP(), fcState = loadF();
+let currentChapterId=null, currentStepId=null, quizState=null, copyBtnTimer=null, copiedTimer=null;
+let begreppFilter='Alla', begreppSearch='', fcFilter='Alla', fcIndex=0, fcFlipped=false;
+
+function loadP(){try{const r=localStorage.getItem(SK);if(r)return JSON.parse(r)}catch(e){}return{steps:{}}}
+function saveP(){try{localStorage.setItem(SK,JSON.stringify(progress))}catch(e){}}
+function loadF(){try{const r=localStorage.getItem(FK);if(r)return JSON.parse(r)}catch(e){}return{known:{},review:{}}}
+function saveF(){try{localStorage.setItem(FK,JSON.stringify(fcState))}catch(e){}}
+
+function isDone(id){return !!progress.steps[id]}
+function markDone(id){progress.steps[id]=true;saveP()}
+function getChapter(id){return chapters.find(c=>c.id===id)}
+function getStep(chId,stId){const c=getChapter(chId);return c.steps.find(s=>s.id===stId)}
+function chapterDone(ch){return ch.steps.every(s=>isDone(s.id))}
+function chapterProgress(ch){const d=ch.steps.filter(s=>isDone(s.id)).length;return{curr:d,total:ch.steps.length}}
+
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+function updateNav(id){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===id))}
+function showView(id){
+document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+const el=document.getElementById(id);if(el)el.classList.add('active');
+updateNav(id);window.scrollTo({top:0,behavior:'instant'});
+if(id==='view-path')renderPath();
+if(id==='view-begrepp')renderBegrepp();
+if(id==='view-flashcards')renderFlashcard();
+if(id==='view-kritik')renderKritik();
+}
+
+function renderPath(){
+const grid=document.getElementById('chapter-grid');grid.innerHTML='';
+chapters.forEach((ch,i)=>{
+const {curr,total}=chapterProgress(ch);
+const done=chapterDone(ch);
+const card=document.createElement('button');
+card.className='chapter-card'+(done?' done':'');
+card.innerHTML=`<span class="chapter-num">${done?'✓':(i+1)}</span>
+<span class="chapter-info"><span class="chapter-name">${ch.title}</span>
+<span class="chapter-meta">${ch.subtitle} · ${curr}/${total} steg</span>
+<div class="chapter-bar"><div class="chapter-bar-fill" style="width:${(curr/total)*100}%"></div></div>
+</span><span class="chapter-chev">›</span>`;
+card.addEventListener('click',()=>openChapter(ch.id));
+grid.appendChild(card);
+});
+const totalSteps=chapters.reduce((s,c)=>s+c.steps.length,0);
+const doneSteps=chapters.reduce((s,c)=>s+c.steps.filter(x=>isDone(x.id)).length,0);
+const frac=doneSteps/totalSteps;
+document.getElementById('global-fill').style.width=(frac*100)+'%';
+document.getElementById('global-text').textContent=Math.round(frac*100)+' % klart ('+doneSteps+'/'+totalSteps+')';
+}
+
+function openChapter(id){
+const ch=getChapter(id);currentChapterId=id;
+document.getElementById('chapter-title').textContent=ch.title;
+document.getElementById('chapter-sub').textContent=ch.subtitle;
+const list=document.getElementById('step-list');list.innerHTML='';
+ch.steps.forEach(st=>{
+const done=isDone(st.id);
+const btn=document.createElement('button');
+btn.className='step-card'+(done?' done':'');
+const typeIcon={lektion:'📖',quiz:'✎',skriv:'✍',fall:'⌘',kritik:'⚖',begrepp:'◈'}[st.type]||'•';
+btn.innerHTML=`<span class="step-icon type-${st.level}">${done?'✓':typeIcon}</span>
+<span class="step-body"><span class="step-title">${st.title}</span>
+<span class="step-meta"><span class="level-badge level-${st.level}">${st.level}</span> ${st.type}</span></span>
+<span class="step-chev">›</span>`;
+btn.addEventListener('click',()=>openStep(id,st.id));
+list.appendChild(btn);
+});
+showView('view-chapter');
+}
+
+document.getElementById('chapter-back').addEventListener('click',()=>showView('view-path'));
+document.getElementById('step-back').addEventListener('click',()=>openChapter(currentChapterId));
+
+function openStep(chId,stId){
+const st=getStep(chId,stId);currentStepId=stId;
+const badge=document.getElementById('step-level');
+badge.textContent=st.level;badge.className='level-badge level-'+st.level;
+document.getElementById('step-title').textContent=st.title;
+const body=document.getElementById('step-body');body.innerHTML='';
+if(st.type==='lektion')renderLektion(body,st);
+else if(st.type==='quiz')renderQuiz(body,st);
+else if(st.type==='skriv'||st.type==='fall'||st.type==='kritik')renderExercise(body,st);
+showView('view-step');
+}
+
+function renderLektion(body,st){
+const wrap=document.createElement('div');
+wrap.className='lesson-content';
+wrap.innerHTML=st.content||'';
+body.appendChild(wrap);
+const actions=document.createElement('div');actions.className='lesson-actions';
+const doneBtn=document.createElement('button');
+doneBtn.className='btn btn-primary';
+doneBtn.textContent=isDone(st.id)?'Klar ✓':'Markera som klar';
+doneBtn.disabled=isDone(st.id);
+doneBtn.addEventListener('click',()=>{markDone(st.id);toast('Markerad som klar ✓');openChapter(currentChapterId)});
+actions.appendChild(doneBtn);
+body.appendChild(actions);
+}
+
+function renderQuiz(body,st){
+quizState={step:st,index:0,results:[],questions:st.questions};
+renderQuizQ(body);
+}
+
+function renderQuizQ(body){
+body.innerHTML='';
+const q=quizState.questions[quizState.index];
+if(!q){renderQuizResult(body);return}
+const card=document.createElement('div');card.className='quiz-card';
+card.innerHTML=`<div class="q-head"><span class="level-badge level-${quizState.step.level}">${quizState.step.level}</span>
+<span class="q-counter">Fråga ${quizState.index+1} av ${quizState.questions.length}</span></div>
+<p class="q-text">${q.q}</p>`;
+const opts=document.createElement('div');opts.className='options';
+q.o.forEach((o,i)=>{
+const b=document.createElement('button');b.className='option';b.textContent=o;
+b.addEventListener('click',()=>{
+if(b.disabled)return;
+opts.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));
+b.classList.add('selected');card.dataset.sel=i;
+card.querySelector('.check-btn').disabled=false;
+});opts.appendChild(b);
+});
+card.appendChild(opts);
+const check=document.createElement('button');
+check.className='btn btn-primary check-btn';check.textContent='Svara';check.disabled=true;
+check.addEventListener('click',()=>{
+const sel=parseInt(card.dataset.sel,10);
+opts.querySelectorAll('.option').forEach((o,i)=>{
+o.disabled=true;
+if(i===q.c)o.classList.add('correct');
+if(i===sel&&sel!==q.c)o.classList.add('wrong');
+});
+check.style.display='none';
+const right=sel===q.c;
+quizState.results.push(right);
+const fb=document.createElement('div');fb.className='feedback';
+fb.innerHTML=`<h5>${right?'✓ Rätt svar':'✗ Fel svar'}</h5><p>${q.e||''}</p>`;
+const next=document.createElement('button');
+next.className='btn btn-primary';
+next.textContent=quizState.index+1<quizState.questions.length?'Nästa fråga':'Visa resultat';
+next.addEventListener('click',()=>{quizState.index++;renderQuizQ(body)});
+fb.appendChild(next);card.appendChild(fb);
+});
+card.appendChild(check);
+body.appendChild(card);
+}
+
+function renderQuizResult(body){
+body.innerHTML='';
+const correct=quizState.results.filter(x=>x).length;
+const total=quizState.questions.length;
+const pct=Math.round((correct/total)*100);
+markDone(quizState.step.id);
+const card=document.createElement('div');card.className='quiz-card';
+card.innerHTML=`<div class="result"><h3>${pct>=80?'Utmärkt!':pct>=60?'Bra jobbat!':'Fortsätt öva'}</h3>
+<div class="result-score">${pct}%</div>
+<p>Du fick ${correct} av ${total} rätt.</p>
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+<button class="btn btn-primary" id="res-back">Tillbaka</button>
+<button class="btn btn-ghost" id="res-redo">Gör om</button>
+</div></div>`;
+body.appendChild(card);
+document.getElementById('res-back').addEventListener('click',()=>openChapter(currentChapterId));
+document.getElementById('res-redo').addEventListener('click',()=>{
+  delete progress.steps[quizState.step.id];
+  saveP();
+  quizState.index=0;quizState.results=[];renderQuizQ(body);
+});
+}
+
+function renderExercise(body,st){
+const card=document.createElement('div');card.className='exercise-card';
+let html='';
+if(st.context)html+=`<div class="exercise-context">${st.context}</div>`;
+html+=`<p class="exercise-q"><strong>Uppgift:</strong> ${st.question}</p>`;
+html+=`<textarea class="exercise-textarea" id="ex-ans" placeholder="Skriv ditt svar här..."></textarea>`;
+html+=`<div class="exercise-actions">
+<button class="btn btn-primary" id="ex-show">Visa modellsvar</button>
+<button class="btn-copy" id="ex-copy">📋 Kopiera till AI-bedömning</button>
+</div>`;
+html+=`<div class="krav-box"><h5>Kunskapskrav (nivå ${st.level})</h5><p>${KUNSKAPSKRAV[st.level]}</p></div>`;
+html+=`<div class="model-box" id="ex-model"><h5>Modellsvar</h5><p>${st.model}</p></div>`;
+card.innerHTML=html;
+body.appendChild(card);
+
+// Återställ sparat svar från localStorage
+const ansKey='socio_ans_'+st.id;
+let savedAns='';
+try{savedAns=localStorage.getItem(ansKey)||''}catch(e){}
+const ta=document.getElementById('ex-ans');
+ta.value=savedAns;
+ta.addEventListener('input',e=>{
+  try{localStorage.setItem(ansKey,e.target.value)}catch(err){}
+});
+
+document.getElementById('ex-show').addEventListener('click',()=>{
+document.getElementById('ex-model').classList.add('show');
+});
+
+document.getElementById('ex-copy').addEventListener('click',async(e)=>{
+  const ans=ta.value.trim();
+  const text=`BEDÖM FÖLJANDE SOCIOLOGISKA SVAR
+
+FRÅGA:
+${st.context?'KONTEXT: '+st.context+'\n\n':''}${st.question}
+
+ELEVENS SVAR:
+${ans || '(Eleven har inte skrivit något svar – bedöm utifrån modellsvaret nedan som referens, och påpeka vänligt att eleven bör skriva ett eget svar först)'}
+
+MODELLSVAR (referens för jämförelse):
+${st.model}
+
+KUNSKAPSKRAV (NIVÅ ${st.level}):
+${KUNSKAPSKRAV[st.level]}
+
+BEDÖMNINGSUPPDRAG:
+Bedöm elevens svar utifrån kunskapskravet ovan. Ge en nivåbedömning (E/C/A), peka på styrkor och svagheter, och föreslå konkreta förbättringar för att nå nästa nivå. Om eleven inte skrivit något svar, påpeka detta vänligt och förklara vad som krävs för respektive nivå utifrån modellsvaret.`;
+
+  const btn=e.currentTarget;
+  const ok=await copyToClipboard(text);
+
+  if(ok){
+    btn.classList.add('copied');
+    btn.textContent='✓ Kopierat!';
+    clearTimeout(copyBtnTimer);
+    copyBtnTimer=setTimeout(()=>{
+      btn.classList.remove('copied');
+      btn.textContent='📋 Kopiera till AI-bedömning';
+    },2200);
+    if(ans.length>20) markDone(st.id);
+    toast('Kopierat – klistra in i din AI');
+  }else{
+    showCopyModal(text);
+    if(ans.length>20) markDone(st.id);
+  }
+});
+const doneBtn=document.createElement('button');
+doneBtn.className='btn btn-ghost';doneBtn.textContent=isDone(st.id)?'Klar ✓':'Markera som klar';
+doneBtn.style.marginTop='14px';doneBtn.disabled=isDone(st.id);
+doneBtn.addEventListener('click',()=>{markDone(st.id);toast('Markerad som klar');doneBtn.textContent='Klar ✓';doneBtn.disabled=true});
+card.appendChild(doneBtn);
+}
+
+function renderBegrepp(){
+const filters=['Alla','Grund','Durkheim','Marx','Weber','Simmel','Metod'];
+const fEl=document.getElementById('begrepp-filters');fEl.innerHTML='';
+filters.forEach(f=>{
+const b=document.createElement('button');
+b.className='filter-btn'+(f===begreppFilter?' active':'');
+b.textContent=f;
+b.addEventListener('click',()=>{begreppFilter=f;renderBegrepp()});
+fEl.appendChild(b);
+});
+const list=document.getElementById('begrepp-list');
+const q=begreppSearch.toLowerCase().trim();
+const filtered=begreppData.filter(b=>{
+const cm=begreppFilter==='Alla'||b.c===begreppFilter;
+const sm=!q||b.t.toLowerCase().includes(q)||b.d.toLowerCase().includes(q)||b.e.toLowerCase().includes(q);
+return cm&&sm;
+});
+if(!filtered.length){list.innerHTML='<p style="text-align:center;color:var(--muted);padding:20px">Inga matchningar.</p>';return}
+list.innerHTML=filtered.map(b=>`<div class="begrepp-card">
+<div class="begrepp-cat">${b.c}</div>
+<div class="begrepp-term">${b.t}</div>
+<p class="begrepp-def">${b.d}</p>
+<p class="begrepp-ex">${b.e}</p></div>`).join('');
+}
+document.getElementById('begrepp-search').addEventListener('input',e=>{begreppSearch=e.target.value;renderBegrepp()});
+
+function renderFlashcard(){
+const filters=['Alla','Grund','Durkheim','Marx','Weber','Simmel'];
+const fEl=document.getElementById('fc-filters');fEl.innerHTML='';
+filters.forEach(f=>{
+const b=document.createElement('button');
+b.className='filter-btn'+(f===fcFilter?' active':'');b.textContent=f;
+b.addEventListener('click',()=>{fcFilter=f;fcIndex=0;fcFlipped=false;renderFlashcard()});
+fEl.appendChild(b);
+});
+const cards=fcFilter==='Alla'?flashcardData:flashcardData.filter(c=>c.c===fcFilter);
+if(!cards.length){document.getElementById('fc-inner').textContent='Inga kort.';return}
+if(fcIndex>=cards.length)fcIndex=0;
+const card=cards[fcIndex];
+document.getElementById('fc-inner').textContent=fcFlipped?card.b:card.f;
+document.getElementById('flashcard').classList.toggle('flipped',fcFlipped);
+document.getElementById('fc-counter').textContent=`Kort ${fcIndex+1} av ${cards.length}`;
+const k=cards.filter(c=>fcState.known[c.f]).length;
+const r=cards.filter(c=>fcState.review[c.f]).length;
+document.getElementById('fc-progress').textContent=`Kan: ${k} · Repetera: ${r}`;
+}
+document.getElementById('flashcard').addEventListener('click',()=>{fcFlipped=!fcFlipped;renderFlashcard()});
+document.getElementById('fc-prev').addEventListener('click',()=>{const c=getFC();fcIndex=(fcIndex-1+c.length)%c.length;fcFlipped=false;renderFlashcard()});
+document.getElementById('fc-next').addEventListener('click',()=>{const c=getFC();fcIndex=(fcIndex+1)%c.length;fcFlipped=false;renderFlashcard()});
+document.getElementById('fc-know').addEventListener('click',()=>{const c=getFC();if(!c.length)return;fcState.known[c[fcIndex].f]=true;delete fcState.review[c[fcIndex].f];saveF();fcIndex=(fcIndex+1)%c.length;fcFlipped=false;renderFlashcard();toast('Kan ✓')});
+document.getElementById('fc-review').addEventListener('click',()=>{const c=getFC();if(!c.length)return;fcState.review[c[fcIndex].f]=true;delete fcState.known[c[fcIndex].f];saveF();fcIndex=(fcIndex+1)%c.length;fcFlipped=false;renderFlashcard();toast('Repetera')});
+function getFC(){return fcFilter==='Alla'?flashcardData:flashcardData.filter(c=>c.c===fcFilter)}
+
+function renderKritik(){
+const list=document.getElementById('kritik-list');list.innerHTML='';
+kritikData.forEach(sec=>{
+const s=document.createElement('div');s.className='kritik-section';
+s.innerHTML=`<h3>${sec.theorist}</h3>`;
+sec.points.forEach(p=>{
+const item=document.createElement('div');item.className='kritik-item';
+item.innerHTML=`<h4>${p.t}</h4><p>${p.x}</p><div class="response">${p.r}</div><div class="source">Källa: ${p.s}</div>`;
+s.appendChild(item);
+});
+list.appendChild(s);
+});
+}
+
+function toast(msg){
+const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+clearTimeout(copiedTimer);copiedTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+async function copyToClipboard(text){
+  if(navigator.clipboard && window.isSecureContext){
+    try{
+      await navigator.clipboard.writeText(text);
+      return true;
+    }catch(e){ /* faller igenom */ }
+  }
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text;
+    ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;left:-9999px;top:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0,text.length);
+    const ok=document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok) return true;
+  }catch(e){ /* faller igenom */ }
+  return false;
+}
+
+function showCopyModal(text){
+  const modal=document.getElementById('copy-modal');
+  const ta=document.getElementById('copy-modal-text');
+  ta.value=text;
+  modal.classList.add('show');
+  setTimeout(()=>{
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0,text.length);
+  },60);
+}
+
+document.getElementById('copy-modal-close').addEventListener('click',()=>{
+  document.getElementById('copy-modal').classList.remove('show');
+});
+document.getElementById('copy-modal-close-2').addEventListener('click',()=>{
+  document.getElementById('copy-modal').classList.remove('show');
+});
+document.getElementById('copy-modal-retry').addEventListener('click',async()=>{
+  const ta=document.getElementById('copy-modal-text');
+  const ok=await copyToClipboard(ta.value);
+  if(ok){
+    toast('Kopierat!');
+    document.getElementById('copy-modal').classList.remove('show');
+  }else{
+    ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);
+    toast('Markera och tryck Ctrl+C / Cmd+C');
+  }
+});
+document.getElementById('copy-modal').addEventListener('click',(e)=>{
+  if(e.target.id==='copy-modal') e.target.classList.remove('show');
+});
+
+document.getElementById('reset-btn').addEventListener('click',()=>{
+if(!confirm('Återställ alla framsteg?'))return;
+progress={steps:{}};fcState={known:{},review:{}};saveP();saveF();
+try{
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith('socio_ans_')) localStorage.removeItem(k);
+  });
+}catch(e){}
+showView('view-path');toast('Framsteg återställda');
+});
+
+showView('view-path');
+</script>
+</body>
+</html>
