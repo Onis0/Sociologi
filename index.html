@@ -212,6 +212,30 @@ opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:100;max-width
 .copy-modal-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .copy-modal-hint{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.55}
 .copy-modal-hint strong{color:var(--green-dark)}
+  .stats-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:210;padding:16px}
+.stats-modal.show{display:flex;animation:fadeIn .2s ease}
+.stats-inner{background:var(--surface);border-radius:var(--radius);max-width:540px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);overflow:hidden}
+.stats-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.stats-head h3{margin:0;font-size:16px;font-weight:700}
+.stats-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);padding:0;line-height:1}
+.stats-close:hover{color:var(--text)}
+.stats-body{padding:16px 20px;overflow-y:auto;flex:1}
+.stats-summary{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.stats-box{flex:1;min-width:120px;background:var(--green-light);border-radius:12px;padding:14px;text-align:center}
+.stats-box .num{font-size:28px;font-weight:700;color:var(--green-dark);line-height:1.1}
+.stats-box .lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.stats-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.stats-table th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.stats-table td{padding:8px 6px;border-bottom:1px solid var(--line)}
+.stats-table td:last-child{text-align:right;font-weight:600;color:var(--green-dark)}
+.stats-table td:nth-child(2){color:var(--muted);font-size:12px}
+.stats-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.stats-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
+.stats-refresh{background:none;border:1.5px solid var(--line);padding:7px 14px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--green-dark);cursor:pointer;transition:all .15s}
+.stats-refresh:hover{border-color:var(--green);background:var(--green-light)}
+.begrepp-card.clickable{cursor:pointer;transition:all .15s;border-color:#d8d2f0}
+.begrepp-card.clickable:hover{border-color:var(--purple);box-shadow:0 4px 16px rgba(122,108,212,.15);transform:translateY(-1px)}
+.begrepp-badge{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--purple-light);color:var(--purple);margin-left:6px;letter-spacing:.03em}
 
 .footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:24px;padding:0 8px}
 .reset-btn{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;margin-top:6px}
@@ -331,6 +355,22 @@ opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:100;max-width
     <div class="copy-modal-foot">
       <button class="btn btn-ghost" id="copy-modal-close-2">Stäng</button>
       <button class="btn btn-primary" id="copy-modal-retry">Försök kopiera igen</button>
+    </div>
+  </div>
+</div>
+
+  <div class="stats-modal" id="stats-modal">
+  <div class="stats-inner">
+    <div class="stats-head">
+      <h3>Besöksstatistik</h3>
+      <button class="stats-close" id="stats-close" aria-label="Stäng">×</button>
+    </div>
+    <div class="stats-body" id="stats-body">
+      <p style="color:var(--muted);text-align:center;padding:20px">Laddar statistik…</p>
+    </div>
+    <div class="stats-foot">
+      <button class="stats-refresh" id="stats-refresh">↻ Uppdatera</button>
+      <button class="btn btn-ghost" id="stats-close-2">Stäng</button>
     </div>
   </div>
 </div>
@@ -1151,11 +1191,20 @@ const sm=!q||b.t.toLowerCase().includes(q)||b.d.toLowerCase().includes(q)||b.e.t
 return cm&&sm;
 });
 if(!filtered.length){list.innerHTML='<p style="text-align:center;color:var(--muted);padding:20px">Inga matchningar.</p>';return}
-list.innerHTML=filtered.map(b=>`<div class="begrepp-card">
+list.innerHTML=filtered.map(b=>{
+const isBas=b.t==='Bas';
+return `<div class="begrepp-card${isBas?' clickable':''}" data-term="${b.t}">
 <div class="begrepp-cat">${b.c}</div>
-<div class="begrepp-term">${b.t}</div>
+<div class="begrepp-term">${b.t}${isBas?'<span class="begrepp-badge">→ visa besöksstatistik</span>':''}</div>
 <p class="begrepp-def">${b.d}</p>
-<p class="begrepp-ex">${b.e}</p></div>`).join('');
+<p class="begrepp-ex">${b.e}</p></div>`;
+}).join('');
+// Koppla klick på "Bas"-kortet till statistikmodalen
+list.querySelectorAll('.begrepp-card').forEach(card=>{
+  if(card.dataset.term==='Bas'){
+    card.addEventListener('click',showStats);
+  }
+});
 }
 document.getElementById('begrepp-search').addEventListener('input',e=>{begreppSearch=e.target.value;renderBegrepp()});
 
@@ -1272,6 +1321,126 @@ try{
 showView('view-path');toast('Framsteg återställda');
 });
 
+/* ============================================================
+   BESÖKSRÄKNARE – JSONBin.io
+   ============================================================ */
+const JSONBIN_KEY = '$2a$10$SkbMqN6rSngFz7eGDvxPveFzTO1pKc1INdjeS1mskV1FAubVqm64y';
+const JSONBIN_BIN = '6ad63a19ffd5d16053793227';
+const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_BIN;
+
+async function getVisitorIP(){
+  // Metod 1: api.ipify.org
+  try{
+    const r = await fetch('https://api.ipify.org?format=json');
+    const d = await r.json();
+    if(d && d.ip) return d.ip;
+  }catch(e){}
+  // Metod 2: fallback till icanhazip
+  try{
+    const r = await fetch('https://ipv4.icanhazip.com/');
+    const t = await r.text();
+    if(t && t.trim()) return t.trim();
+  }catch(e){}
+  // Metod 3: persistent anonymt ID (för CORS-blockerade fall)
+  let anon = localStorage.getItem('socio_anon_id');
+  if(!anon){
+    anon = 'anon_' + Math.random().toString(36).substring(2,10);
+    localStorage.setItem('socio_anon_id', anon);
+  }
+  return anon;
+}
+
+async function trackVisit(){
+  try{
+    const ip = await getVisitorIP();
+    const getRes = await fetch(JSONBIN_URL + '/latest', {
+      headers: { 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Meta': 'false' }
+    });
+    if(!getRes.ok) throw new Error('Läsning misslyckades: HTTP ' + getRes.status);
+    const record = await getRes.json();
+    const visits = (record && record.visits && typeof record.visits==='object') ? record.visits : {};
+
+    const now = new Date().toISOString();
+    if(!visits[ip]) visits[ip] = { count: 0, first: now, last: now };
+    visits[ip].count = (visits[ip].count || 0) + 1;
+    visits[ip].last = now;
+
+    const putRes = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify({ visits })
+    });
+    if(!putRes.ok){
+      const errTxt = await putRes.text();
+      console.warn('Sparning misslyckades:', putRes.status, errTxt);
+    }
+  }catch(e){
+    console.warn('Besöksräknare misslyckades:', e.message);
+  }
+}
+
+async function showStats(){
+  const modal = document.getElementById('stats-modal');
+  const body = document.getElementById('stats-body');
+  modal.classList.add('show');
+  body.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Laddar statistik…</p>';
+
+  try{
+    const res = await fetch(JSONBIN_URL + '/latest', {
+      headers: { 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Meta': 'false' }
+    });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const visits = (data && data.visits && typeof data.visits==='object') ? data.visits : {};
+    const ips = Object.keys(visits);
+
+    if(ips.length === 0){
+      body.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Inga besök registrerade ännu.</p>';
+      return;
+    }
+
+    const totalVisits = ips.reduce((sum, ip) => sum + (visits[ip].count||0), 0);
+
+    let html = '<div class="stats-summary">';
+    html += '<div class="stats-box"><div class="num">' + ips.length + '</div><div class="lbl">Unika IP-adresser</div></div>';
+    html += '<div class="stats-box"><div class="num">' + totalVisits + '</div><div class="lbl">Totalt antal besök</div></div>';
+    html += '</div>';
+
+    html += '<table class="stats-table"><thead><tr><th>IP-adress</th><th>Senast</th><th>Besök</th></tr></thead><tbody>';
+    ips.sort((a,b) => (visits[b].count||0) - (visits[a].count||0));
+    ips.forEach(ip => {
+      const v = visits[ip];
+      const last = v.last ? new Date(v.last).toLocaleString('sv-SE', { dateStyle: 'short', timeStyle: 'short' }) : '–';
+      html += '<tr><td>' + ip + '</td><td>' + last + '</td><td>' + (v.count||0) + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    html += '<p class="stats-note">Räknaren ökar varje gång sidan laddas. Endast IP-adresser som besökt sidan visas.</p>';
+
+    body.innerHTML = html;
+  }catch(e){
+    console.error(e);
+    body.innerHTML = '<p style="color:#b33;padding:16px;text-align:center">Kunde inte hämta statistik.<br><small style="color:#888">' + e.message + '</small><br><br><small style="color:#888">Om filen öppnas direkt från datorn (file://) kan webbläsaren blockera anropet. Prova att köra via en lokal server (t.ex. <code>python -m http.server</code>) eller öppna filen via en hosting-tjänst.</small></p>';
+  }
+}
+
+// Stäng & uppdatera
+document.getElementById('stats-close').addEventListener('click', () => {
+  document.getElementById('stats-modal').classList.remove('show');
+});
+document.getElementById('stats-close-2').addEventListener('click', () => {
+  document.getElementById('stats-modal').classList.remove('show');
+});
+document.getElementById('stats-refresh').addEventListener('click', showStats);
+document.getElementById('stats-modal').addEventListener('click', (e) => {
+  if(e.target.id === 'stats-modal') e.target.classList.remove('show');
+});
+
+// Starta räkningen när sidan laddas
+trackVisit();
+  
 showView('view-path');
 </script>
 </body>
